@@ -1,12 +1,13 @@
 /*
 
-     This module fetches all rows of data from the ABM and from shadow-RAM
+     This module fetches all rows of data from the ABM and from the SMC
      which is a block of BRAM that serves as a cache for the contents of SMEM.
+     (SMC means "SMem Cache")
 
      A "row" in this case is 256 bytes, which is a row of SMEM data for 
      a single SMEM bank.
 
-     For each row of data received, the row data from SHA is compared to 
+     For each row of data received, the row data from cache is compared to 
      the row data for ABM, and if they differ, the ABM data is flushed to
      the cache, and the ABM data is written to SMEM.
 
@@ -39,12 +40,18 @@ module fetch_abm # ( parameter AW=20, DW=512, IW=2, BRAM_SIZE=32'h1000)
     
     // This strobes high to write a row to SMEM via SPI    
     output write_smem_via_spi,
-    
-    // This strobes high when the SMEM write via HSI is complete
-    input write_smem_hsi_complete,
 
-    // This strobes high when the SMEM write via SPI is complete
-    input write_smem_spi_complete,
+    // Asserted when the HSI SMEM-writer is ready to accept new data
+    input smem_hsi_ready,
+
+    // Asserted when the SPI SMEM-writer is ready to accept new data
+    input smem_spi_ready,
+
+    // Asserted when the HSI SMEM row-write is complete
+    input smem_hsi_idle,
+
+    // Asserted when the SPI SMEM row-write is complete
+    input smem_spi_idle,
 
     //-------------------------------------------------------------------------
     // When either 'write_smem_via_hsi' or 'write_smem_via_spi' go high to 
@@ -116,51 +123,51 @@ module fetch_abm # ( parameter AW=20, DW=512, IW=2, BRAM_SIZE=32'h1000)
     //==================  This is an AXI4-master interface  ===================
 
     // "Specify write address"              -- Master --    -- Slave --
-    output     [AW-1:0]                     M_SHA_AWADDR,
-    output                                  M_SHA_AWVALID,
-    output     [7:0]                        M_SHA_AWLEN,
-    output     [2:0]                        M_SHA_AWSIZE,
-    output     [IW-1:0]                     M_SHA_AWID,
-    output     [1:0]                        M_SHA_AWBURST,
-    output                                  M_SHA_AWLOCK,
-    output     [3:0]                        M_SHA_AWCACHE,
-    output     [3:0]                        M_SHA_AWQOS,
-    output     [2:0]                        M_SHA_AWPROT,
-    input                                                   M_SHA_AWREADY,
+    output     [AW-1:0]                     M_SMC_AWADDR,
+    output                                  M_SMC_AWVALID,
+    output     [7:0]                        M_SMC_AWLEN,
+    output     [2:0]                        M_SMC_AWSIZE,
+    output     [IW-1:0]                     M_SMC_AWID,
+    output     [1:0]                        M_SMC_AWBURST,
+    output                                  M_SMC_AWLOCK,
+    output     [3:0]                        M_SMC_AWCACHE,
+    output     [3:0]                        M_SMC_AWQOS,
+    output     [2:0]                        M_SMC_AWPROT,
+    input                                                   M_SMC_AWREADY,
 
     // "Write Data"                         -- Master --    -- Slave --
-    output     [DW-1:0]                     M_SHA_WDATA,
-    output     [(DW/8)-1:0]                 M_SHA_WSTRB,
-    output                                  M_SHA_WVALID,
-    output                                  M_SHA_WLAST,
-    input                                                   M_SHA_WREADY,
+    output     [DW-1:0]                     M_SMC_WDATA,
+    output     [(DW/8)-1:0]                 M_SMC_WSTRB,
+    output                                  M_SMC_WVALID,
+    output                                  M_SMC_WLAST,
+    input                                                   M_SMC_WREADY,
 
     // "Send Write Response"                -- Master --    -- Slave --
-    input[1:0]                                              M_SHA_BRESP,
-    input[IW-1:0]                                           M_SHA_BID,
-    input                                                   M_SHA_BVALID,
-    output                                  M_SHA_BREADY,
+    input[1:0]                                              M_SMC_BRESP,
+    input[IW-1:0]                                           M_SMC_BID,
+    input                                                   M_SMC_BVALID,
+    output                                  M_SMC_BREADY,
 
     // "Specify read address"               -- Master --    -- Slave --
-    output reg [AW-1:0]                     M_SHA_ARADDR,
-    output                                  M_SHA_ARVALID,
-    output     [2:0]                        M_SHA_ARPROT,
-    output                                  M_SHA_ARLOCK,
-    output     [IW-1:0]                     M_SHA_ARID,
-    output     [2:0]                        M_SHA_ARSIZE,
-    output     [7:0]                        M_SHA_ARLEN,
-    output     [1:0]                        M_SHA_ARBURST,
-    output     [3:0]                        M_SHA_ARCACHE,
-    output     [3:0]                        M_SHA_ARQOS,
-    input                                                   M_SHA_ARREADY,
+    output reg [AW-1:0]                     M_SMC_ARADDR,
+    output                                  M_SMC_ARVALID,
+    output     [2:0]                        M_SMC_ARPROT,
+    output                                  M_SMC_ARLOCK,
+    output     [IW-1:0]                     M_SMC_ARID,
+    output     [2:0]                        M_SMC_ARSIZE,
+    output     [7:0]                        M_SMC_ARLEN,
+    output     [1:0]                        M_SMC_ARBURST,
+    output     [3:0]                        M_SMC_ARCACHE,
+    output     [3:0]                        M_SMC_ARQOS,
+    input                                                   M_SMC_ARREADY,
 
     // "Read data back to master"           -- Master --    -- Slave --
-    input[DW-1:0]                                           M_SHA_RDATA,
-    input[IW-1:0]                                           M_SHA_RID,
-    input                                                   M_SHA_RVALID,
-    input[1:0]                                              M_SHA_RRESP,
-    input                                                   M_SHA_RLAST,
-    output                                  M_SHA_RREADY
+    input[DW-1:0]                                           M_SMC_RDATA,
+    input[IW-1:0]                                           M_SMC_RID,
+    input                                                   M_SMC_RVALID,
+    input[1:0]                                              M_SMC_RRESP,
+    input                                                   M_SMC_RLAST,
+    output                                  M_SMC_RREADY
     //==========================================================================
 
 );
@@ -182,24 +189,29 @@ localparam ENTRIES_PER_ROW = ROW_SIZE / 4;
 // This is 1 for "use HSI bus" and 0 for "use SPI bus"
 reg smem_bus_type;
 
-// This determine whether the SMEM row-updater is idle
-wire smem_update_idle = (smem_bus_type == 0) ? write_smem_spi_complete 
-                                             : write_smem_hsi_complete;
+// Asserted when the SMEM row-updater is ready to accept another row of data
+wire smem_update_ready = (smem_bus_type == BUS_TYPE_SPI) ? smem_spi_ready
+                                                         : smem_hsi_ready;
 
-// These hold a row of data from the ABM and the shadow RAM
+
+// Asserted when the SMEM row-updater is idle (i.e, the row is complete)
+wire smem_update_idle  = (smem_bus_type == BUS_TYPE_SPI) ? smem_spi_idle 
+                                                         : smem_hsi_idle;
+
+// These hold a row of data from the ABM and the SMC
 reg[DW-1:0] abm_data[0:ROW_CYCLES-1];
-reg[DW-1:0] sha_data[0:ROW_CYCLES-1];
+reg[DW-1:0] smc_data[0:ROW_CYCLES-1];
 
-// This is the cycle-within-the-burst (0 thru 3) for the ABM and shadow RAM
-reg[1:0] abm_cycle, sha_cycle;
+// This is the cycle-within-the-burst (0 thru 3) for the ABM and the SMC
+reg[1:0] abm_cycle, smc_cycle;
 
-// The cycle-within-burst when writing data back to shadow RAM
+// The cycle-within-burst when writing data back to cache
 reg[1:0] wrt_cycle;
 
 // This is the row index of data we are receiving from each interface
 // Bits [ 2:0] of this value are the SMEM bank number
 // Bits [11:3] of this value are the SMEM row number
-reg[15:0] sha_row_index, abm_row_index;
+reg[15:0] smc_row_index, abm_row_index;
 
 // When this is strobed high, it starts one of the row-updaters
 reg start_smem_write;
@@ -207,7 +219,7 @@ assign write_smem_via_hsi = (smem_bus_type == BUS_TYPE_HSI) ? start_smem_write :
 assign write_smem_via_spi = (smem_bus_type == BUS_TYPE_SPI) ? start_smem_write : 0;
 
 
-// When this goes high, the current abm_data is written to shadow RAM
+// When this goes high, the current abm_data is written to cache
 reg start_cache_write;
 
 // When this is high, the cache-write logic is idle
@@ -219,16 +231,16 @@ reg fetch_next_cache_row;
 
 // There are 64 entries in a 256-byte row.  This contains a bitmap of
 // which entries from "abm_data[]" don't match the corresponding entries
-// in "sha_data[]"
+// in "smc_data[]"
 wire[ENTRIES_PER_ROW-1:0] mismatch_map;
 
 // Fill in "mismatch_map" with a bitmap of which cache entries don't match the
 // correspoding ABM entry.
 for (i=0; i<DB/4; i=i+1) begin
-    assign mismatch_map[i+ 0] = (abm_data[0][i*32 +: 32] != sha_data[0][i*32 +: 32]) | force_cache_update;
-    assign mismatch_map[i+16] = (abm_data[1][i*32 +: 32] != sha_data[1][i*32 +: 32]) | force_cache_update;
-    assign mismatch_map[i+32] = (abm_data[2][i*32 +: 32] != sha_data[2][i*32 +: 32]) | force_cache_update;    
-    assign mismatch_map[i+48] = (abm_data[3][i*32 +: 32] != sha_data[3][i*32 +: 32]) | force_cache_update;        
+    assign mismatch_map[i+ 0] = (abm_data[0][i*32 +: 32] != smc_data[0][i*32 +: 32]) | force_cache_update;
+    assign mismatch_map[i+16] = (abm_data[1][i*32 +: 32] != smc_data[1][i*32 +: 32]) | force_cache_update;
+    assign mismatch_map[i+32] = (abm_data[2][i*32 +: 32] != smc_data[2][i*32 +: 32]) | force_cache_update;    
+    assign mismatch_map[i+48] = (abm_data[3][i*32 +: 32] != smc_data[3][i*32 +: 32]) | force_cache_update;        
 end
 
 //=============================================================================
@@ -267,32 +279,32 @@ end
 
 
 //=============================================================================
-// This block is responsible for sending read requests to shadow RAM
+// This block is responsible for sending read requests to the cache
 //=============================================================================
-reg sha_ar_state;
+reg smc_ar_state;
 //-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
     if (resetn == 0) begin
-        sha_ar_state <= 0;
+        smc_ar_state <= 0;
     end
 
-    else case(sha_ar_state) 
+    else case(smc_ar_state) 
 
-        // If we're supposed to start reading the SHA, issue
+        // If we're supposed to start reading the cache, issue
         // a read request for the first row
         0:  if (start) begin
-                M_SHA_ARADDR <= 0;
-                sha_ar_state <= 1;
+                M_SMC_ARADDR <= 0;
+                smc_ar_state <= 1;
             end
 
         // When that read request is accepted, issue the
         // next read request until we have requested every row
-        1:  if (M_SHA_ARVALID & M_SHA_ARREADY) begin
-                if (M_SHA_ARADDR == LAST_ADDR)
-                    sha_ar_state <= 0;
+        1:  if (M_SMC_ARVALID & M_SMC_ARREADY) begin
+                if (M_SMC_ARADDR == LAST_ADDR)
+                    smc_ar_state <= 0;
                 else
-                    M_SHA_ARADDR <= M_SHA_ARADDR + ROW_SIZE;
+                    M_SMC_ARADDR <= M_SMC_ARADDR + ROW_SIZE;
             end
     endcase
 end
@@ -300,23 +312,23 @@ end
 
 
 //=============================================================================
-// This state machine manages the SHA AW-channel when we are told to 
-// write the ABM data back to the cache that exists in shadow-RAM
+// This state machine manages the SMC AW-channel when we are told to write
+// the ABM data back to the cache 
 //=============================================================================
-reg sha_aw_state;
+reg smc_aw_state;
 //-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
     if (resetn == 0)
-        sha_aw_state <= 0;
+        smc_aw_state <= 0;
 
-    else case(sha_aw_state)
+    else case(smc_aw_state)
 
         0:  if (start_cache_write)
-                sha_aw_state <= 1;
+                smc_aw_state <= 1;
 
-        1: if (M_SHA_AWVALID & M_SHA_AWREADY)
-                sha_aw_state <= 0;
+        1: if (M_SMC_AWVALID & M_SMC_AWREADY)
+                smc_aw_state <= 0;
     endcase
 
 end
@@ -324,79 +336,79 @@ end
 
 
 //=============================================================================
-// This state machine manages the SHA W-channel when we are told to 
-// write the ABM data back to the cache that exists in shadow-RAM
+// This state machine manages the SMC W-channel when we are told to write
+// the ABM data back to the cache 
 //=============================================================================
-reg[1:0] sha_w_state;
+reg[1:0] smc_w_state;
 //-----------------------------------------------------------------------------
 always @(posedge clk) begin
 
     if (resetn == 0)
-        sha_w_state <= 0;
+        smc_w_state <= 0;
 
-    else case(sha_w_state)
+    else case(smc_w_state)
 
         0:  if (start_cache_write) begin
                 wrt_cycle   <= 0;
-                sha_w_state <= 1;
+                smc_w_state <= 1;
             end
 
-        1:  if (M_SHA_WVALID & M_SHA_WREADY) begin
-                if (M_SHA_WLAST == 0)
+        1:  if (M_SMC_WVALID & M_SMC_WREADY) begin
+                if (M_SMC_WLAST == 0)
                     wrt_cycle <= wrt_cycle + 1;
                 else
-                    sha_w_state <= 0;
+                    smc_w_state <= 0;
             end
 
     endcase
 end
 
-assign cache_write_complete = (sha_w_state == 0) & (start_cache_write == 0);
+assign cache_write_complete = (smc_w_state == 0) & (start_cache_write == 0);
 //=============================================================================
 
 
 //=============================================================================
-// This state machine receives rows of data from the cache in shadow-ram
+// This state machine receives rows of data from the cache 
 //=============================================================================
-reg[2:0] sha_r_state;
-localparam SHA_R_IDLE = 0;
-localparam SHA_R_READ = 1;
-localparam SHA_R_WAIT = 2;
+reg[2:0] smc_r_state;
+localparam SMC_R_IDLE = 0;
+localparam SMC_R_READ = 1;
+localparam SMC_R_WAIT = 2;
 always @(posedge clk) begin
     
     if (resetn == 0) begin
-        sha_r_state <= 0;
+        smc_r_state <= 0;
     end 
 
-    else case(sha_r_state)
+    else case(smc_r_state)
 
         // If we've been told to start, then go read in 
         // an entire row's worth of data from the cache
-        SHA_R_IDLE:
+        SMC_R_IDLE:
             if (start) begin
-                sha_row_index <= 0;
-                sha_r_state   <= SHA_R_READ;
+                smc_row_index <= 0;
+                smc_r_state   <= SMC_R_READ;
             end
 
 
         // Here we read in cycles of cache data and 
         // store them until we have an entire row
-        SHA_R_READ:
-            if (M_SHA_RVALID & M_SHA_RREADY) begin
-                sha_data[sha_cycle] <= M_SHA_RDATA;
-                if (M_SHA_RLAST) 
-                    sha_r_state <= SHA_R_WAIT;
+        SMC_R_READ:
+            if (M_SMC_RVALID & M_SMC_RREADY) begin
+                smc_data[smc_cycle] <= M_SMC_RDATA;
+                if (M_SMC_RLAST) 
+                    smc_r_state <= SMC_R_WAIT;
             end
 
         // Here we wait for another thread to tell us that
         // we can go fetch the next row
-        SHA_R_WAIT:
+        SMC_R_WAIT:
             if (fetch_next_cache_row) begin
-                if (sha_row_index == BRAM_ROWS - 1)
-                    sha_r_state   <= SHA_R_IDLE;
+                if (smc_row_index == BRAM_ROWS - 1)
+                    smc_r_state   <= SMC_R_IDLE;
                 else begin
-                    sha_row_index <= sha_row_index + 1;
-                    sha_r_state   <= SHA_R_READ;
+                    smc_row_index <= smc_row_index + 1;
+                    smc_r_state   <= SMC_R_READ;
                 end
             end
     endcase
@@ -424,16 +436,16 @@ end
 
 //=============================================================================
 // This state machine keeps track of which cycle-within-the-burst we are on
-// for the SHA AXI interface
+// for the SMC AXI interface
 //=============================================================================
 always @(posedge clk) begin
     if (resetn == 0)
-        sha_cycle <= 0;
-    else if (M_SHA_RVALID & M_SHA_RREADY) begin
-        if (M_SHA_RLAST)
-            sha_cycle <= 0;
+        smc_cycle <= 0;
+    else if (M_SMC_RVALID & M_SMC_RREADY) begin
+        if (M_SMC_RLAST)
+            smc_cycle <= 0;
         else
-            sha_cycle <= sha_cycle + 1;
+            smc_cycle <= smc_cycle + 1;
     end
 end
 //=============================================================================
@@ -446,7 +458,7 @@ end
 reg[2:0] abm_r_state;
 localparam ABM_R_IDLE             = 0;
 localparam ABM_R_READ             = 1;
-localparam ABM_R_WAIT_SHA         = 2;
+localparam ABM_R_WAIT_SMC         = 2;
 localparam ABM_R_WAIT_CACHE_WRITE = 3;
 localparam ABM_R_WAIT_LAST        = 4;
 //-----------------------------------------------------------------------------
@@ -478,18 +490,19 @@ always @(posedge clk) begin
             if (M_ABM_RVALID & M_ABM_RREADY) begin
                 abm_data[abm_cycle] <= M_ABM_RDATA;
                 if (M_ABM_RLAST) 
-                    abm_r_state  <= ABM_R_WAIT_SHA;
+                    abm_r_state  <= ABM_R_WAIT_SMC;
             end
 
         // Here we wait for two conditions to both be true:
         //   (1) We've fetched the current row from cache
-        //   (2) The SMEM updater is idle
+        //   (2) The SMEM updater is ready to accept more data
+        //
         // Once those two things are true, if cache data is different than 
         // the ABM data, we will flush this ABM row to cache and to SMEM
-        ABM_R_WAIT_SHA:
-            if (sha_r_state == SHA_R_WAIT && smem_update_idle) begin
+        ABM_R_WAIT_SMC:
+            if (smc_r_state == SMC_R_WAIT && smem_update_ready) begin
                 
-                // Tell the SHA_R state machine that it can go 
+                // Tell the SMC_R state machine that it can go 
                 // fetch the next row from cache
                 fetch_next_cache_row <= 1;
 
@@ -593,43 +606,43 @@ assign M_ABM_RREADY = (resetn == 1) & (abm_r_state == ABM_R_READ);
 
 
 //=============================================================================
-// Constant values for AXI-MM interface that reads/writes shadow-RAM
+// Constant values for AXI-MM interface that reads/writes the cache
 //=============================================================================
 
 // AW-channel
-assign M_SHA_AWADDR  = abm_row_index * 256;
-assign M_SHA_AWLEN   = ROW_CYCLES - 1;
-assign M_SHA_AWSIZE  = $clog2(DB);
-assign M_SHA_AWBURST = 1;   
-assign M_SHA_AWVALID = (sha_aw_state == 1);
-assign M_SHA_AWID    = 0;   
-assign M_SHA_AWLOCK  = 0;   
-assign M_SHA_AWCACHE = 0;
-assign M_SHA_AWQOS   = 0; 
-assign M_SHA_AWPROT  = 0;  
+assign M_SMC_AWADDR  = abm_row_index * 256;
+assign M_SMC_AWLEN   = ROW_CYCLES - 1;
+assign M_SMC_AWSIZE  = $clog2(DB);
+assign M_SMC_AWBURST = 1;   
+assign M_SMC_AWVALID = (smc_aw_state == 1);
+assign M_SMC_AWID    = 0;   
+assign M_SMC_AWLOCK  = 0;   
+assign M_SMC_AWCACHE = 0;
+assign M_SMC_AWQOS   = 0; 
+assign M_SMC_AWPROT  = 0;  
 
 // W-channel
-assign M_SHA_WDATA   = abm_data[wrt_cycle];
-assign M_SHA_WSTRB   = -1;
-assign M_SHA_WLAST   = (wrt_cycle == ROW_CYCLES-1);
-assign M_SHA_WVALID  = (sha_w_state == 1);
+assign M_SMC_WDATA   = abm_data[wrt_cycle];
+assign M_SMC_WSTRB   = -1;
+assign M_SMC_WLAST   = (wrt_cycle == ROW_CYCLES-1);
+assign M_SMC_WVALID  = (smc_w_state == 1);
 
 // B-channel
-assign M_SHA_BREADY  = (resetn == 1);
+assign M_SMC_BREADY  = (resetn == 1);
 
 // Constant values for the AR-channel
-assign M_SHA_ARSIZE  = $clog2(DB);
-assign M_SHA_ARLEN   = ROW_CYCLES-1;
-assign M_SHA_ARBURST = 1;
-assign M_SHA_ARVALID = (sha_ar_state == 1);
-assign M_SHA_ARPROT  = 0;
-assign M_SHA_ARLOCK  = 0;
-assign M_SHA_ARID    = 0;
-assign M_SHA_ARCACHE = 0;
-assign M_SHA_ARQOS   = 0;
+assign M_SMC_ARSIZE  = $clog2(DB);
+assign M_SMC_ARLEN   = ROW_CYCLES-1;
+assign M_SMC_ARBURST = 1;
+assign M_SMC_ARVALID = (smc_ar_state == 1);
+assign M_SMC_ARPROT  = 0;
+assign M_SMC_ARLOCK  = 0;
+assign M_SMC_ARID    = 0;
+assign M_SMC_ARCACHE = 0;
+assign M_SMC_ARQOS   = 0;
 
 // Constant values for the R-channel
-assign M_SHA_RREADY = (resetn == 1) & (sha_r_state == SHA_R_READ);
+assign M_SMC_RREADY = (resetn == 1) & (smc_r_state == SMC_R_READ);
 //=============================================================================
 
 

@@ -105,7 +105,7 @@
             "value_src": "const_prop"
           },
           "CLK_DOMAIN": {
-            "value": "/source_100mhz/system_clock_clk_out1",
+            "value": "/clock_source/system_clock_clk_out1",
             "value_src": "ip_prop"
           },
           "DATA_WIDTH": {
@@ -240,7 +240,7 @@
             "value_src": "default"
           },
           "CLK_DOMAIN": {
-            "value": "/source_100mhz/system_clock_clk_out1",
+            "value": "/clock_source/system_clock_clk_out1",
             "value_src": "ip_prop"
           },
           "DATA_WIDTH": {
@@ -366,7 +366,7 @@
             "value_src": "default"
           },
           "CLK_DOMAIN": {
-            "value": "/source_100mhz/system_clock_clk_out1",
+            "value": "/clock_source/system_clock_clk_out1",
             "value_src": "ip_prop"
           },
           "DATA_WIDTH": {
@@ -492,7 +492,7 @@
             "value_src": "default"
           },
           "CLK_DOMAIN": {
-            "value": "/source_100mhz/system_clock_clk_out1",
+            "value": "/clock_source/system_clock_clk_out1",
             "value_src": "ip_prop"
           },
           "DATA_WIDTH": {
@@ -618,7 +618,7 @@
             "value_src": "default"
           },
           "CLK_DOMAIN": {
-            "value": "/source_100mhz/system_clock_clk_out1",
+            "value": "/clock_source/system_clock_clk_out1",
             "value_src": "ip_prop"
           },
           "DATA_WIDTH": {
@@ -736,7 +736,7 @@
             "value_src": "constant"
           },
           "CLK_DOMAIN": {
-            "value": "/source_100mhz/system_clock_clk_out1",
+            "value": "/clock_source/system_clock_clk_out1",
             "value_src": "ip_prop"
           },
           "FREQ_HZ": {

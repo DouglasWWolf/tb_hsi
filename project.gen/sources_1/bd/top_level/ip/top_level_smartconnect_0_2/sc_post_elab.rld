@@ -82,7 +82,7 @@
 /config/ip/num_si/value=3
 /config/ip/num_mi/value=1
 /config/ip/num_clks/value=1
-/config/aclk/csk/value=_source_100mhz_system_clock_clk_out1:50:0.0
+/config/aclk/csk/value=_clock_source_system_clock_clk_out1:50:0.0
 /clocking/S00_Entry/ASSOCIATED_CLK/value=aclk;range=aclk;editable=0
 /clocking/S01_Entry/ASSOCIATED_CLK/value=aclk;range=aclk;editable=0
 /clocking/S02_Entry/ASSOCIATED_CLK/value=aclk;range=aclk;editable=0
