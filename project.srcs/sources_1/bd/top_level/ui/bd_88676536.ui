@@ -1,0 +1,45 @@
+{
+   "ActiveEmotionalView":"No Loops",
+   "Default View_ScaleFactor":"1.0",
+   "Default View_TopLeft":"-379,-257",
+   "DisplayTieOff":"1",
+   "ExpandedHierarchyInLayout":"",
+   "No Loops_ExpandedHierarchyInLayout":"",
+   "No Loops_Layout":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
+#  -string -flagsOSRD
+preplace port S00_AXI -pg 1 -lvl 0 -x 0 -y 60 -defaultsOSRD
+preplace port S01_AXI -pg 1 -lvl 0 -x 0 -y 80 -defaultsOSRD
+preplace port S02_AXI -pg 1 -lvl 0 -x 0 -y 100 -defaultsOSRD
+preplace port port-id_s_axi_aclk -pg 1 -lvl 0 -x 0 -y 120 -defaultsOSRD
+preplace port port-id_s_axi_aresetn -pg 1 -lvl 0 -x 0 -y 140 -defaultsOSRD
+preplace inst axi_bram_ctrl -pg 1 -lvl 2 -x 460 -y 140 -defaultsOSRD -pinDir S_AXI left -pinY S_AXI 0L -pinDir BRAM_PORTA right -pinY BRAM_PORTA 0R -pinDir s_axi_aclk left -pinY s_axi_aclk 60L -pinDir s_axi_aresetn left -pinY s_axi_aresetn 80L
+preplace inst axi_bram_ctrl_bram -pg 1 -lvl 3 -x 730 -y 140 -defaultsOSRD -pinDir BRAM_PORTA left -pinY BRAM_PORTA 0L -pinDir rsta_busy right -pinY rsta_busy 0R
+preplace inst smartconnect -pg 1 -lvl 1 -x 180 -y 60 -defaultsOSRD -pinDir S00_AXI left -pinY S00_AXI 0L -pinDir S01_AXI left -pinY S01_AXI 20L -pinDir S02_AXI left -pinY S02_AXI 40L -pinDir M00_AXI right -pinY M00_AXI 80R -pinDir aclk left -pinY aclk 60L -pinDir aresetn left -pinY aresetn 80L
+preplace netloc source_100mhz_sys_clk 1 0 2 40 200 N
+preplace netloc source_100mhz_sys_resetn 1 0 2 20 220 N
+preplace netloc S00_AXI_1 1 0 1 NJ 60
+preplace netloc S01_AXI_1 1 0 1 NJ 80
+preplace netloc S02_AXI_1 1 0 1 NJ 100
+preplace netloc axi_bram_ctrl_BRAM_PORTA 1 2 1 N 140
+preplace netloc smartconnect_0_M00_AXI 1 1 1 N 140
+levelinfo -pg 1 0 180 460 730 860
+pagesize -pg 1 -db -bbox -sgen -150 -60 860 280
+",
+   "No Loops_ScaleFactor":"1.0",
+   "No Loops_TopLeft":"-367,-210",
+   "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
+#  -string -flagsOSRD
+preplace port port-id_s_axi_aclk -pg 1 -lvl 0 -x 0 -y 20 -defaultsOSRD
+preplace port port-id_s_axi_aresetn -pg 1 -lvl 0 -x 0 -y 130 -defaultsOSRD
+preplace inst smartconnect -pg 1 -lvl 1 -x 150 -y 100 -defaultsOSRD
+preplace inst axi_bram_ctrl -pg 1 -lvl 2 -x 410 -y 120 -defaultsOSRD
+preplace inst axi_bram -pg 1 -lvl 3 -x 670 -y 120 -defaultsOSRD
+preplace netloc source_100mhz_sys_clk 1 0 2 20 10 280
+preplace netloc source_100mhz_sys_resetn 1 0 2 20 190 280J
+preplace netloc smartconnect_0_M00_AXI 1 1 1 N 100
+preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 2 1 N 120
+levelinfo -pg 1 0 150 410 670 800
+pagesize -pg 1 -db -bbox -sgen -150 0 800 200
+"
+}
+0
