@@ -33,7 +33,9 @@
         "shadow_bram": "",
         "sim_writer": "",
         "smem_ila": "",
-        "fetch_abm": ""
+        "fetch_abm": "",
+        "data_consumer_0": "",
+        "smem_writer_hsi_s1": ""
       },
       "fill": "",
       "smemw_ctl": ""
@@ -2091,10 +2093,20 @@
             "inst_hier_path": "smem_writer/smem_ila",
             "parameters": {
               "C_MON_TYPE": {
-                "value": "NATIVE"
+                "value": "MIX"
               },
               "C_NUM_OF_PROBES": {
                 "value": "7"
+              },
+              "C_SLOT_0_INTF_TYPE": {
+                "value": "xilinx.com:interface:axis_rtl:1.0"
+              }
+            },
+            "interface_ports": {
+              "SLOT_0_AXIS": {
+                "mode": "Monitor",
+                "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
+                "vlnv": "xilinx.com:interface:axis_rtl:1.0"
               }
             }
           },
@@ -2840,6 +2852,295 @@
                 }
               }
             }
+          },
+          "data_consumer_0": {
+            "vlnv": "xilinx.com:module_ref:data_consumer:1.0",
+            "xci_name": "top_level_data_consumer_0_0",
+            "xci_path": "ip/top_level_data_consumer_0_0/top_level_data_consumer_0_0.xci",
+            "inst_hier_path": "smem_writer/data_consumer_0",
+            "reference_info": {
+              "ref_type": "hdl",
+              "ref_name": "data_consumer",
+              "boundary_crc": "0x0"
+            },
+            "interface_ports": {
+              "AXIS_RX": {
+                "mode": "Slave",
+                "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
+                "vlnv": "xilinx.com:interface:axis_rtl:1.0",
+                "parameters": {
+                  "TDATA_NUM_BYTES": {
+                    "value": "4",
+                    "value_src": "auto"
+                  },
+                  "TDEST_WIDTH": {
+                    "value": "0",
+                    "value_src": "constant"
+                  },
+                  "TID_WIDTH": {
+                    "value": "0",
+                    "value_src": "constant"
+                  },
+                  "TUSER_WIDTH": {
+                    "value": "1",
+                    "value_src": "constant"
+                  },
+                  "HAS_TREADY": {
+                    "value": "1",
+                    "value_src": "constant"
+                  },
+                  "HAS_TSTRB": {
+                    "value": "0",
+                    "value_src": "constant"
+                  },
+                  "HAS_TKEEP": {
+                    "value": "1",
+                    "value_src": "auto"
+                  },
+                  "HAS_TLAST": {
+                    "value": "1",
+                    "value_src": "constant"
+                  },
+                  "FREQ_HZ": {
+                    "value": "50000000",
+                    "value_src": "ip_prop"
+                  },
+                  "PHASE": {
+                    "value": "0.0",
+                    "value_src": "ip_prop"
+                  },
+                  "CLK_DOMAIN": {
+                    "value": "/source_100mhz/system_clock_clk_out1",
+                    "value_src": "ip_prop"
+                  }
+                },
+                "port_maps": {
+                  "TDATA": {
+                    "physical_name": "AXIS_RX_TDATA",
+                    "direction": "I",
+                    "left": "31",
+                    "right": "0"
+                  },
+                  "TKEEP": {
+                    "physical_name": "AXIS_RX_TKEEP",
+                    "direction": "I",
+                    "left": "3",
+                    "right": "0"
+                  },
+                  "TLAST": {
+                    "physical_name": "AXIS_RX_TLAST",
+                    "direction": "I"
+                  },
+                  "TUSER": {
+                    "physical_name": "AXIS_RX_TUSER",
+                    "direction": "I"
+                  },
+                  "TVALID": {
+                    "physical_name": "AXIS_RX_TVALID",
+                    "direction": "I"
+                  },
+                  "TREADY": {
+                    "physical_name": "AXIS_RX_TREADY",
+                    "direction": "O"
+                  }
+                }
+              }
+            },
+            "ports": {
+              "clk": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "AXIS_RX",
+                    "value_src": "constant"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "resetn",
+                    "value_src": "constant"
+                  },
+                  "FREQ_HZ": {
+                    "value": "50000000",
+                    "value_src": "ip_prop"
+                  },
+                  "PHASE": {
+                    "value": "0.0",
+                    "value_src": "ip_prop"
+                  },
+                  "CLK_DOMAIN": {
+                    "value": "/source_100mhz/system_clock_clk_out1",
+                    "value_src": "ip_prop"
+                  }
+                }
+              },
+              "resetn": {
+                "type": "rst",
+                "direction": "I",
+                "parameters": {
+                  "POLARITY": {
+                    "value": "ACTIVE_LOW",
+                    "value_src": "constant"
+                  }
+                }
+              }
+            }
+          },
+          "smem_writer_hsi_s1": {
+            "vlnv": "xilinx.com:module_ref:smem_writer_hsi_s1:1.0",
+            "xci_name": "top_level_smem_writer_hsi_s1_0_0",
+            "xci_path": "ip/top_level_smem_writer_hsi_s1_0_0/top_level_smem_writer_hsi_s1_0_0.xci",
+            "inst_hier_path": "smem_writer/smem_writer_hsi_s1",
+            "reference_info": {
+              "ref_type": "hdl",
+              "ref_name": "smem_writer_hsi_s1",
+              "boundary_crc": "0x0"
+            },
+            "interface_ports": {
+              "axis_out": {
+                "mode": "Master",
+                "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
+                "vlnv": "xilinx.com:interface:axis_rtl:1.0",
+                "parameters": {
+                  "TDATA_NUM_BYTES": {
+                    "value": "4",
+                    "value_src": "constant"
+                  },
+                  "TDEST_WIDTH": {
+                    "value": "0",
+                    "value_src": "constant"
+                  },
+                  "TID_WIDTH": {
+                    "value": "0",
+                    "value_src": "constant"
+                  },
+                  "TUSER_WIDTH": {
+                    "value": "1",
+                    "value_src": "constant"
+                  },
+                  "HAS_TREADY": {
+                    "value": "1",
+                    "value_src": "constant"
+                  },
+                  "HAS_TSTRB": {
+                    "value": "0",
+                    "value_src": "constant"
+                  },
+                  "HAS_TKEEP": {
+                    "value": "0",
+                    "value_src": "constant"
+                  },
+                  "HAS_TLAST": {
+                    "value": "1",
+                    "value_src": "constant"
+                  },
+                  "FREQ_HZ": {
+                    "value": "50000000",
+                    "value_src": "ip_prop"
+                  },
+                  "PHASE": {
+                    "value": "0.0",
+                    "value_src": "ip_prop"
+                  },
+                  "CLK_DOMAIN": {
+                    "value": "/source_100mhz/system_clock_clk_out1",
+                    "value_src": "ip_prop"
+                  }
+                },
+                "port_maps": {
+                  "TDATA": {
+                    "physical_name": "axis_out_tdata",
+                    "direction": "O",
+                    "left": "31",
+                    "right": "0"
+                  },
+                  "TLAST": {
+                    "physical_name": "axis_out_tlast",
+                    "direction": "O"
+                  },
+                  "TUSER": {
+                    "physical_name": "axis_out_tuser",
+                    "direction": "O"
+                  },
+                  "TVALID": {
+                    "physical_name": "axis_out_tvalid",
+                    "direction": "O"
+                  },
+                  "TREADY": {
+                    "physical_name": "axis_out_tready",
+                    "direction": "I"
+                  }
+                }
+              }
+            },
+            "ports": {
+              "clk": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_BUSIF": {
+                    "value": "axis_out",
+                    "value_src": "constant"
+                  },
+                  "ASSOCIATED_RESET": {
+                    "value": "resetn",
+                    "value_src": "constant"
+                  },
+                  "FREQ_HZ": {
+                    "value": "50000000",
+                    "value_src": "ip_prop"
+                  },
+                  "PHASE": {
+                    "value": "0.0",
+                    "value_src": "ip_prop"
+                  },
+                  "CLK_DOMAIN": {
+                    "value": "/source_100mhz/system_clock_clk_out1",
+                    "value_src": "ip_prop"
+                  }
+                }
+              },
+              "resetn": {
+                "type": "rst",
+                "direction": "I",
+                "parameters": {
+                  "POLARITY": {
+                    "value": "ACTIVE_LOW",
+                    "value_src": "constant"
+                  }
+                }
+              },
+              "smem_data3": {
+                "direction": "I",
+                "left": "511",
+                "right": "0"
+              },
+              "smem_data2": {
+                "direction": "I",
+                "left": "511",
+                "right": "0"
+              },
+              "smem_data1": {
+                "direction": "I",
+                "left": "511",
+                "right": "0"
+              },
+              "smem_data0": {
+                "direction": "I",
+                "left": "511",
+                "right": "0"
+              },
+              "row_index": {
+                "direction": "I",
+                "left": "31",
+                "right": "0"
+              },
+              "start": {
+                "direction": "I"
+              },
+              "done": {
+                "direction": "O"
+              }
+            }
           }
         },
         "interface_nets": {
@@ -2860,6 +3161,13 @@
               "fetch_abm/M_SHA",
               "shadow_bram_ctrl/S_AXI"
             ]
+          },
+          "smem_writer_hsi_s1_axis_out": {
+            "interface_ports": [
+              "data_consumer_0/AXIS_RX",
+              "smem_writer_hsi_s1/axis_out",
+              "smem_ila/SLOT_0_AXIS"
+            ]
           }
         },
         "nets": {
@@ -2872,25 +3180,29 @@
           "fetch_abm_smem_data0": {
             "ports": [
               "fetch_abm/smem_data0",
-              "smem_ila/probe2"
+              "smem_ila/probe2",
+              "smem_writer_hsi_s1/smem_data0"
             ]
           },
           "fetch_abm_smem_data1": {
             "ports": [
               "fetch_abm/smem_data1",
-              "smem_ila/probe3"
+              "smem_ila/probe3",
+              "smem_writer_hsi_s1/smem_data1"
             ]
           },
           "fetch_abm_smem_data2": {
             "ports": [
               "fetch_abm/smem_data2",
-              "smem_ila/probe4"
+              "smem_ila/probe4",
+              "smem_writer_hsi_s1/smem_data2"
             ]
           },
           "fetch_abm_smem_data3": {
             "ports": [
               "fetch_abm/smem_data3",
-              "smem_ila/probe5"
+              "smem_ila/probe5",
+              "smem_writer_hsi_s1/smem_data3"
             ]
           },
           "fetch_abm_smem_mismatch": {
@@ -2902,14 +3214,15 @@
           "fetch_abm_smem_row_index": {
             "ports": [
               "fetch_abm/smem_row_index",
-              "smem_ila/probe1"
+              "smem_ila/probe1",
+              "smem_writer_hsi_s1/row_index"
             ]
           },
           "fetch_abm_write_smem_via_hsi": {
             "ports": [
               "fetch_abm/write_smem_via_hsi",
-              "sim_writer/start_hsi",
-              "smem_ila/probe0"
+              "smem_ila/probe0",
+              "smem_writer_hsi_s1/start"
             ]
           },
           "fetch_abm_write_smem_via_spi": {
@@ -2930,16 +3243,16 @@
               "fetch_abm/select_hsi"
             ]
           },
-          "sim_writer_hsi_complete": {
-            "ports": [
-              "sim_writer/hsi_complete",
-              "fetch_abm/write_smem_hsi_complete"
-            ]
-          },
           "sim_writer_spi_complete": {
             "ports": [
               "sim_writer/spi_complete",
               "fetch_abm/write_smem_spi_complete"
+            ]
+          },
+          "smem_writer_hsi_s1_0_done": {
+            "ports": [
+              "smem_writer_hsi_s1/done",
+              "fetch_abm/write_smem_hsi_complete"
             ]
           },
           "source_100mhz_sys_clk": {
@@ -2948,14 +3261,18 @@
               "shadow_bram_ctrl/s_axi_aclk",
               "sim_writer/clk",
               "smem_ila/clk",
-              "fetch_abm/clk"
+              "fetch_abm/clk",
+              "data_consumer_0/clk",
+              "smem_writer_hsi_s1/clk"
             ]
           },
           "source_100mhz_sys_resetn": {
             "ports": [
               "resetn",
               "shadow_bram_ctrl/s_axi_aresetn",
-              "fetch_abm/resetn"
+              "fetch_abm/resetn",
+              "data_consumer_0/resetn",
+              "smem_writer_hsi_s1/resetn"
             ]
           }
         }

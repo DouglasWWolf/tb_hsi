@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Fri Feb 13 23:21:35 2026
+//Date        : Sat Feb 14 01:39:10 2026
 //Host        : wolf-super-server running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level.bd
 //Design      : top_level
@@ -896,8 +896,13 @@ module smem_writer_imp_ZNAGWC
   wire fetch_abm_write_smem_via_spi;
   wire force_cache_update_1;
   wire select_hsi_1;
-  wire sim_writer_hsi_complete;
   wire sim_writer_spi_complete;
+  wire smem_writer_hsi_s1_0_done;
+  (* CONN_BUS_INFO = "smem_writer_hsi_s1_axis_out xilinx.com:interface:axis:1.0 None TDATA" *) (* DONT_TOUCH *) wire [31:0]smem_writer_hsi_s1_axis_out_TDATA;
+  (* CONN_BUS_INFO = "smem_writer_hsi_s1_axis_out xilinx.com:interface:axis:1.0 None TLAST" *) (* DONT_TOUCH *) wire smem_writer_hsi_s1_axis_out_TLAST;
+  (* CONN_BUS_INFO = "smem_writer_hsi_s1_axis_out xilinx.com:interface:axis:1.0 None TREADY" *) (* DONT_TOUCH *) wire smem_writer_hsi_s1_axis_out_TREADY;
+  (* CONN_BUS_INFO = "smem_writer_hsi_s1_axis_out xilinx.com:interface:axis:1.0 None TUSER" *) (* DONT_TOUCH *) wire smem_writer_hsi_s1_axis_out_TUSER;
+  (* CONN_BUS_INFO = "smem_writer_hsi_s1_axis_out xilinx.com:interface:axis:1.0 None TVALID" *) (* DONT_TOUCH *) wire smem_writer_hsi_s1_axis_out_TVALID;
   wire source_100mhz_sys_clk;
   wire source_100mhz_sys_resetn;
 
@@ -943,6 +948,15 @@ module smem_writer_imp_ZNAGWC
   assign select_hsi_1 = select_hsi;
   assign source_100mhz_sys_clk = clk;
   assign source_100mhz_sys_resetn = resetn;
+  top_level_data_consumer_0_0 data_consumer_0
+       (.AXIS_RX_TDATA(smem_writer_hsi_s1_axis_out_TDATA),
+        .AXIS_RX_TKEEP({1'b1,1'b1,1'b1,1'b1}),
+        .AXIS_RX_TLAST(smem_writer_hsi_s1_axis_out_TLAST),
+        .AXIS_RX_TREADY(smem_writer_hsi_s1_axis_out_TREADY),
+        .AXIS_RX_TUSER(smem_writer_hsi_s1_axis_out_TUSER),
+        .AXIS_RX_TVALID(smem_writer_hsi_s1_axis_out_TVALID),
+        .clk(source_100mhz_sys_clk),
+        .resetn(source_100mhz_sys_resetn));
   top_level_fetch_abm_0_0 fetch_abm
        (.M_ABM_ARADDR(fetch_abm_M_ABM_ARADDR),
         .M_ABM_ARBURST(fetch_abm_M_ABM_ARBURST),
@@ -1027,7 +1041,7 @@ module smem_writer_imp_ZNAGWC
         .smem_mismatch(fetch_abm_smem_mismatch),
         .smem_row_index(fetch_abm_smem_row_index),
         .start(example_slave_start),
-        .write_smem_hsi_complete(sim_writer_hsi_complete),
+        .write_smem_hsi_complete(smem_writer_hsi_s1_0_done),
         .write_smem_spi_complete(sim_writer_spi_complete),
         .write_smem_via_hsi(fetch_abm_write_smem_via_hsi),
         .write_smem_via_spi(fetch_abm_write_smem_via_spi));
@@ -1086,19 +1100,43 @@ module smem_writer_imp_ZNAGWC
         .s_axi_wvalid(fetch_abm_M_SHA_WVALID));
   top_level_sim_writer_0_0 sim_writer
        (.clk(source_100mhz_sys_clk),
-        .hsi_complete(sim_writer_hsi_complete),
         .spi_complete(sim_writer_spi_complete),
-        .start_hsi(fetch_abm_write_smem_via_hsi),
+        .start_hsi(1'b0),
         .start_spi(fetch_abm_write_smem_via_spi));
   top_level_system_ila_0_2 smem_ila
-       (.clk(source_100mhz_sys_clk),
+       (.SLOT_0_AXIS_tdata(smem_writer_hsi_s1_axis_out_TDATA[0]),
+        .SLOT_0_AXIS_tdest(1'b0),
+        .SLOT_0_AXIS_tid(1'b0),
+        .SLOT_0_AXIS_tkeep(1'b1),
+        .SLOT_0_AXIS_tlast(smem_writer_hsi_s1_axis_out_TLAST),
+        .SLOT_0_AXIS_tready(smem_writer_hsi_s1_axis_out_TREADY),
+        .SLOT_0_AXIS_tstrb(1'b1),
+        .SLOT_0_AXIS_tuser(smem_writer_hsi_s1_axis_out_TUSER),
+        .SLOT_0_AXIS_tvalid(smem_writer_hsi_s1_axis_out_TVALID),
+        .clk(source_100mhz_sys_clk),
         .probe0(fetch_abm_write_smem_via_hsi),
         .probe1(fetch_abm_smem_row_index[0]),
         .probe2(fetch_abm_smem_data0[0]),
         .probe3(fetch_abm_smem_data1[0]),
         .probe4(fetch_abm_smem_data2[0]),
         .probe5(fetch_abm_smem_data3[0]),
-        .probe6(fetch_abm_smem_mismatch[0]));
+        .probe6(fetch_abm_smem_mismatch[0]),
+        .resetn(1'b0));
+  top_level_smem_writer_hsi_s1_0_0 smem_writer_hsi_s1
+       (.axis_out_tdata(smem_writer_hsi_s1_axis_out_TDATA),
+        .axis_out_tlast(smem_writer_hsi_s1_axis_out_TLAST),
+        .axis_out_tready(smem_writer_hsi_s1_axis_out_TREADY),
+        .axis_out_tuser(smem_writer_hsi_s1_axis_out_TUSER),
+        .axis_out_tvalid(smem_writer_hsi_s1_axis_out_TVALID),
+        .clk(source_100mhz_sys_clk),
+        .done(smem_writer_hsi_s1_0_done),
+        .resetn(source_100mhz_sys_resetn),
+        .row_index(fetch_abm_smem_row_index),
+        .smem_data0(fetch_abm_smem_data0),
+        .smem_data1(fetch_abm_smem_data1),
+        .smem_data2(fetch_abm_smem_data2),
+        .smem_data3(fetch_abm_smem_data3),
+        .start(fetch_abm_write_smem_via_hsi));
 endmodule
 
 module source_100mhz_imp_MSWE0P
@@ -1132,7 +1170,7 @@ module source_100mhz_imp_MSWE0P
         .slowest_sync_clk(system_clock_clk_100mhz));
 endmodule
 
-(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=22,numReposBlks=18,numNonXlnxBlks=0,numHierBlks=4,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=8,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=3,da_bram_cntlr_cnt=3,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
+(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=24,numReposBlks=20,numNonXlnxBlks=0,numHierBlks=4,maxHierDepth=1,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=10,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=3,da_bram_cntlr_cnt=3,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
 module top_level
    (CLK100MHZ,
     CPU_RESETN,
