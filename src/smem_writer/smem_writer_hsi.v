@@ -17,7 +17,8 @@
 
 */
 
-`define DEBUG_PORTS
+// `define DEBUG_PORTS
+
 module smem_writer_hsi # (parameter DW=512, HSI_IDLE_COUNT = 7)
 (
     
@@ -59,15 +60,15 @@ module smem_writer_hsi # (parameter DW=512, HSI_IDLE_COUNT = 7)
 
     // This clock drives the HSI bus
     (* X_INTERFACE_INFO      = "xilinx.com:signal:clock:1.0 hsi_clk CLK" *)
-    (* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF hsi:dbg_fifo_out" *)
+    (* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF dbg_fifo_out" *)
     input            hsi_clk,
 
     //----------------------------------------------------------
     // These are synchronous to hsi_clk
     //----------------------------------------------------------
-    output[31:0]     hsi_tdata,
-    output           hsi_tuser,
-    output           hsi_tvalid,
+    output[31:0]     hsi_data,
+    output           hsi_cmd,
+    output           hsi_valid,
     //----------------------------------------------------------
 
     // Output from the HSI bus is suspended when this is low
@@ -245,8 +246,9 @@ reg[7:0] hsi_idle_count;
 //-----------------------------------------------------------------------------
 always @(posedge hsi_clk) begin
 
-    if (hsi_resetn == 0)
+    if (hsi_resetn == 0) begin
         hsi_state <= 0;
+    end
     
     else case(hsi_state)
 
@@ -268,13 +270,13 @@ assign fifo_out_tready = (hsi_resetn == 1)  // Not in reset
                        & (hsi_state  == 0)  // Not in idle-cycles
                        & (hsi_enable == 1); // Output is enabled
 
-assign hsi_tvalid      = (hsi_resetn == 1)  // Not in reset
+assign hsi_valid       = (hsi_resetn == 1)  // Not in reset
                        & (hsi_state  == 0)  // Not in idle-cycles
                        & (hsi_enable == 1)  // Output is enabled
                        & (fifo_out_tvalid); // FIFO has data to output
 
-assign hsi_tdata = fifo_out_tdata;
-assign hsi_tuser = fifo_out_tuser;
+assign hsi_data = fifo_out_tdata;
+assign hsi_cmd  = fifo_out_tuser;
 
 // This is asserted when there is no data available in the FIFO
 assign hsi_fifo_empty = (hsi_state == 0 && fifo_out_tvalid == 0);
@@ -282,7 +284,7 @@ assign hsi_fifo_empty = (hsi_state == 0 && fifo_out_tvalid == 0);
 
 
 //=============================================================================
-// Synchronise "async_enable" into "enable"
+// Synchronize "async_enable" into "enable"
 //=============================================================================
 xpm_cdc_single #
 (
@@ -303,7 +305,7 @@ sync_hsi_enable
 
 
 //=============================================================================
-// Synchronise "hsi_fifo_empty" into "fifo_empty"
+// Synchronize "hsi_fifo_empty" into "fifo_empty"
 //=============================================================================
 xpm_cdc_single #
 (
@@ -345,7 +347,7 @@ sync_hsi_resetn
 // This FIFO acts as a CDC between the "clk" domain and the "hsi_clk" domain.
 //
 // TLAST is asserted on the last element of an SMEM row
-// TUSER is asserted on the HSI command byte that precedes the SMEM row data
+// TUSER is asserted on the HSI command word that precedes the SMEM row data
 //=============================================================================
 xpm_fifo_axis #
 (
@@ -366,7 +368,7 @@ hsi_fifo
    .s_aresetn(resetn ),
 
     // This input bus of the FIFO
-   .s_axis_tdata (fifo_in_tdata ),
+   .s_axis_tdata (fifo_in_tdata ), 
    .s_axis_tuser (fifo_in_tuser ),
    .s_axis_tlast (fifo_in_tlast ),
    .s_axis_tvalid(fifo_in_tvalid),

@@ -1,7 +1,7 @@
 //Copyright 1986-2021 Xilinx, Inc. All Rights Reserved.
 //--------------------------------------------------------------------------------
 //Tool Version: Vivado v.2021.1 (lin64) Build 3247384 Thu Jun 10 19:36:07 MDT 2021
-//Date        : Sat Feb 14 19:09:58 2026
+//Date        : Sun Feb 15 01:26:18 2026
 //Host        : wolf-super-server running 64-bit Ubuntu 20.04.6 LTS
 //Command     : generate_target top_level.bd
 //Design      : top_level
@@ -1009,17 +1009,12 @@ module smem_writer_imp_ZNAGWC
     M_ABM_wvalid,
     async_enable,
     clk,
-    dbg_fifo_out_tdata,
-    dbg_fifo_out_tlast,
-    dbg_fifo_out_tready,
-    dbg_fifo_out_tuser,
-    dbg_fifo_out_tvalid,
     force_cache_update,
-    hsi_bus_tdata,
-    hsi_bus_tuser,
-    hsi_bus_tvalid,
     hsi_clk,
     hsi_clk_in,
+    hsi_cmd,
+    hsi_data,
+    hsi_valid,
     resetn,
     select_hsi,
     start);
@@ -1062,27 +1057,17 @@ module smem_writer_imp_ZNAGWC
   output M_ABM_wvalid;
   input async_enable;
   input clk;
-  output dbg_fifo_out_tdata;
-  output dbg_fifo_out_tlast;
-  output dbg_fifo_out_tready;
-  output dbg_fifo_out_tuser;
-  output dbg_fifo_out_tvalid;
   input force_cache_update;
-  output hsi_bus_tdata;
-  output hsi_bus_tuser;
-  output hsi_bus_tvalid;
   output hsi_clk;
   input hsi_clk_in;
+  output hsi_cmd;
+  output [31:0]hsi_data;
+  output hsi_valid;
   input resetn;
   input select_hsi;
   input start;
 
   wire async_enable_1;
-  (* CONN_BUS_INFO = "dbg_fifo_in xilinx.com:interface:axis:1.0 None TDATA" *) (* DONT_TOUCH *) wire [31:0]dbg_fifo_in_TDATA;
-  (* CONN_BUS_INFO = "dbg_fifo_in xilinx.com:interface:axis:1.0 None TLAST" *) (* DONT_TOUCH *) wire dbg_fifo_in_TLAST;
-  (* CONN_BUS_INFO = "dbg_fifo_in xilinx.com:interface:axis:1.0 None TREADY" *) (* DONT_TOUCH *) wire dbg_fifo_in_TREADY;
-  (* CONN_BUS_INFO = "dbg_fifo_in xilinx.com:interface:axis:1.0 None TUSER" *) (* DONT_TOUCH *) wire dbg_fifo_in_TUSER;
-  (* CONN_BUS_INFO = "dbg_fifo_in xilinx.com:interface:axis:1.0 None TVALID" *) (* DONT_TOUCH *) wire dbg_fifo_in_TVALID;
   wire example_slave_start;
   wire [19:0]fetch_abm_M_ABM_ARADDR;
   wire [1:0]fetch_abm_M_ABM_ARBURST;
@@ -1167,15 +1152,10 @@ module smem_writer_imp_ZNAGWC
   wire hsi_clk_1;
   wire select_hsi_1;
   wire sim_writer_spi_complete;
-  wire [31:0]smem_writer_hsi_dbg_fifo_out_TDATA;
-  wire smem_writer_hsi_dbg_fifo_out_TLAST;
-  wire smem_writer_hsi_dbg_fifo_out_TREADY;
-  wire smem_writer_hsi_dbg_fifo_out_TUSER;
-  wire smem_writer_hsi_dbg_fifo_out_TVALID;
   wire smem_writer_hsi_done;
-  wire [31:0]smem_writer_hsi_hsi_TDATA;
-  wire smem_writer_hsi_hsi_TUSER;
-  wire smem_writer_hsi_hsi_TVALID;
+  wire smem_writer_hsi_hsi_cmd;
+  wire [31:0]smem_writer_hsi_hsi_data;
+  wire smem_writer_hsi_hsi_valid;
   wire smem_writer_hsi_ready;
   wire source_100mhz_sys_clk;
   wire source_100mhz_sys_resetn;
@@ -1207,11 +1187,6 @@ module smem_writer_imp_ZNAGWC
   assign M_ABM_wstrb[63:0] = fetch_abm_M_ABM_WSTRB;
   assign M_ABM_wvalid = fetch_abm_M_ABM_WVALID;
   assign async_enable_1 = async_enable;
-  assign dbg_fifo_out_tdata = smem_writer_hsi_dbg_fifo_out_TDATA[0];
-  assign dbg_fifo_out_tlast = smem_writer_hsi_dbg_fifo_out_TLAST;
-  assign dbg_fifo_out_tready = smem_writer_hsi_dbg_fifo_out_TREADY;
-  assign dbg_fifo_out_tuser = smem_writer_hsi_dbg_fifo_out_TUSER;
-  assign dbg_fifo_out_tvalid = smem_writer_hsi_dbg_fifo_out_TVALID;
   assign example_slave_start = start;
   assign fetch_abm_M_ABM_ARREADY = M_ABM_arready;
   assign fetch_abm_M_ABM_AWREADY = M_ABM_awready;
@@ -1225,11 +1200,11 @@ module smem_writer_imp_ZNAGWC
   assign fetch_abm_M_ABM_RVALID = M_ABM_rvalid;
   assign fetch_abm_M_ABM_WREADY = M_ABM_wready;
   assign force_cache_update_1 = force_cache_update;
-  assign hsi_bus_tdata = smem_writer_hsi_hsi_TDATA[0];
-  assign hsi_bus_tuser = smem_writer_hsi_hsi_TUSER;
-  assign hsi_bus_tvalid = smem_writer_hsi_hsi_TVALID;
   assign hsi_clk = hsi_clk_1;
   assign hsi_clk_1 = hsi_clk_in;
+  assign hsi_cmd = smem_writer_hsi_hsi_cmd;
+  assign hsi_data[31:0] = smem_writer_hsi_hsi_data;
+  assign hsi_valid = smem_writer_hsi_hsi_valid;
   assign select_hsi_1 = select_hsi;
   assign source_100mhz_sys_clk = clk;
   assign source_100mhz_sys_resetn = resetn;
@@ -1367,21 +1342,11 @@ module smem_writer_imp_ZNAGWC
   top_level_smem_writer_hsi_0_0 smem_writer_hsi
        (.async_enable(async_enable_1),
         .clk(source_100mhz_sys_clk),
-        .dbg_fifo_in_tdata(dbg_fifo_in_TDATA),
-        .dbg_fifo_in_tlast(dbg_fifo_in_TLAST),
-        .dbg_fifo_in_tready(dbg_fifo_in_TREADY),
-        .dbg_fifo_in_tuser(dbg_fifo_in_TUSER),
-        .dbg_fifo_in_tvalid(dbg_fifo_in_TVALID),
-        .dbg_fifo_out_tdata(smem_writer_hsi_dbg_fifo_out_TDATA),
-        .dbg_fifo_out_tlast(smem_writer_hsi_dbg_fifo_out_TLAST),
-        .dbg_fifo_out_tready(smem_writer_hsi_dbg_fifo_out_TREADY),
-        .dbg_fifo_out_tuser(smem_writer_hsi_dbg_fifo_out_TUSER),
-        .dbg_fifo_out_tvalid(smem_writer_hsi_dbg_fifo_out_TVALID),
         .done(smem_writer_hsi_done),
         .hsi_clk(hsi_clk_1),
-        .hsi_tdata(smem_writer_hsi_hsi_TDATA),
-        .hsi_tuser(smem_writer_hsi_hsi_TUSER),
-        .hsi_tvalid(smem_writer_hsi_hsi_TVALID),
+        .hsi_cmd(smem_writer_hsi_hsi_cmd),
+        .hsi_data(smem_writer_hsi_hsi_data),
+        .hsi_valid(smem_writer_hsi_hsi_valid),
         .ready(smem_writer_hsi_ready),
         .resetn(source_100mhz_sys_resetn),
         .row_index(fetch_abm_smem_row_index),
@@ -1390,21 +1355,9 @@ module smem_writer_imp_ZNAGWC
         .smem_data2(fetch_abm_smem_data5),
         .smem_data3(fetch_abm_smem_data4),
         .start(fetch_abm_write_smem_via_hsi));
-  top_level_system_ila_0_5 system_ila_0
-       (.SLOT_0_AXIS_tdata(dbg_fifo_in_TDATA[0]),
-        .SLOT_0_AXIS_tdest(1'b0),
-        .SLOT_0_AXIS_tid(1'b0),
-        .SLOT_0_AXIS_tkeep(1'b1),
-        .SLOT_0_AXIS_tlast(dbg_fifo_in_TLAST),
-        .SLOT_0_AXIS_tready(dbg_fifo_in_TREADY),
-        .SLOT_0_AXIS_tstrb(1'b1),
-        .SLOT_0_AXIS_tuser(dbg_fifo_in_TUSER),
-        .SLOT_0_AXIS_tvalid(dbg_fifo_in_TVALID),
-        .clk(source_100mhz_sys_clk),
-        .resetn(1'b0));
 endmodule
 
-(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=26,numReposBlks=21,numNonXlnxBlks=0,numHierBlks=5,maxHierDepth=2,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=9,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=3,da_bram_cntlr_cnt=3,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
+(* CORE_GENERATION_INFO = "top_level,IP_Integrator,{x_ipVendor=xilinx.com,x_ipLibrary=BlockDiagram,x_ipName=top_level,x_ipVersion=1.00.a,x_ipLanguage=VERILOG,numBlks=25,numReposBlks=20,numNonXlnxBlks=0,numHierBlks=5,maxHierDepth=2,numSysgenBlks=0,numHlsBlks=0,numHdlrefBlks=9,numPkgbdBlks=0,bdsource=USER,da_axi4_cnt=3,da_bram_cntlr_cnt=3,synth_mode=OOC_per_IP}" *) (* HW_HANDOFF = "top_level.hwdef" *) 
 module top_level
    (CLK100MHZ,
     CPU_RESETN,
@@ -1537,15 +1490,10 @@ module top_level
   wire [31:0]poke_ctl_row;
   wire poke_ctl_start;
   wire [31:0]poke_ctl_value;
-  (* CONN_BUS_INFO = "smem_writer_dbg_fifo_out xilinx.com:interface:axis:1.0 None TDATA" *) (* DONT_TOUCH *) wire smem_writer_dbg_fifo_out_TDATA;
-  (* CONN_BUS_INFO = "smem_writer_dbg_fifo_out xilinx.com:interface:axis:1.0 None TLAST" *) (* DONT_TOUCH *) wire smem_writer_dbg_fifo_out_TLAST;
-  (* CONN_BUS_INFO = "smem_writer_dbg_fifo_out xilinx.com:interface:axis:1.0 None TREADY" *) (* DONT_TOUCH *) wire smem_writer_dbg_fifo_out_TREADY;
-  (* CONN_BUS_INFO = "smem_writer_dbg_fifo_out xilinx.com:interface:axis:1.0 None TUSER" *) (* DONT_TOUCH *) wire smem_writer_dbg_fifo_out_TUSER;
-  (* CONN_BUS_INFO = "smem_writer_dbg_fifo_out xilinx.com:interface:axis:1.0 None TVALID" *) (* DONT_TOUCH *) wire smem_writer_dbg_fifo_out_TVALID;
-  (* CONN_BUS_INFO = "smem_writer_hsi_bus xilinx.com:interface:axis:1.0 None TDATA" *) (* DONT_TOUCH *) wire smem_writer_hsi_bus_TDATA;
-  (* CONN_BUS_INFO = "smem_writer_hsi_bus xilinx.com:interface:axis:1.0 None TUSER" *) (* DONT_TOUCH *) wire smem_writer_hsi_bus_TUSER;
-  (* CONN_BUS_INFO = "smem_writer_hsi_bus xilinx.com:interface:axis:1.0 None TVALID" *) (* DONT_TOUCH *) wire smem_writer_hsi_bus_TVALID;
   wire smem_writer_hsi_clk;
+  wire smem_writer_hsi_cmd;
+  wire [31:0]smem_writer_hsi_data;
+  wire smem_writer_hsi_valid;
   wire smemw_ctl_force_cache_update;
   wire smemw_ctl_select_hsi;
   wire smemw_ctl_start;
@@ -1810,27 +1758,11 @@ module top_level
         .M_AXI_WVALID(fill_0_M_AXI_WVALID),
         .clk(source_100mhz_sys_clk),
         .resetn(source_100mhz_sys_resetn));
-  top_level_system_ila_0_4 hsi_ila
-       (.SLOT_0_AXIS_tdata(smem_writer_hsi_bus_TDATA),
-        .SLOT_0_AXIS_tdest(1'b0),
-        .SLOT_0_AXIS_tid(1'b0),
-        .SLOT_0_AXIS_tkeep(1'b1),
-        .SLOT_0_AXIS_tlast(1'b0),
-        .SLOT_0_AXIS_tready(1'b1),
-        .SLOT_0_AXIS_tstrb(1'b1),
-        .SLOT_0_AXIS_tuser(smem_writer_hsi_bus_TUSER),
-        .SLOT_0_AXIS_tvalid(smem_writer_hsi_bus_TVALID),
-        .SLOT_1_AXIS_tdata(smem_writer_dbg_fifo_out_TDATA),
-        .SLOT_1_AXIS_tdest(1'b0),
-        .SLOT_1_AXIS_tid(1'b0),
-        .SLOT_1_AXIS_tkeep(1'b1),
-        .SLOT_1_AXIS_tlast(smem_writer_dbg_fifo_out_TLAST),
-        .SLOT_1_AXIS_tready(smem_writer_dbg_fifo_out_TREADY),
-        .SLOT_1_AXIS_tstrb(1'b1),
-        .SLOT_1_AXIS_tuser(smem_writer_dbg_fifo_out_TUSER),
-        .SLOT_1_AXIS_tvalid(smem_writer_dbg_fifo_out_TVALID),
-        .clk(smem_writer_hsi_clk),
-        .resetn(1'b0));
+  top_level_system_ila_0_0 hsi_ila
+       (.clk(smem_writer_hsi_clk),
+        .probe0(smem_writer_hsi_valid),
+        .probe1(smem_writer_hsi_cmd),
+        .probe2(smem_writer_hsi_data[0]));
   top_level_xlconstant_0_0 one
        (.dout(one_dout));
   top_level_poke_0_0 poke
@@ -1945,17 +1877,12 @@ module top_level
         .M_ABM_wvalid(fill_smem_s1_0_M_AXI_WVALID),
         .async_enable(one_dout),
         .clk(source_100mhz_sys_clk),
-        .dbg_fifo_out_tdata(smem_writer_dbg_fifo_out_TDATA),
-        .dbg_fifo_out_tlast(smem_writer_dbg_fifo_out_TLAST),
-        .dbg_fifo_out_tready(smem_writer_dbg_fifo_out_TREADY),
-        .dbg_fifo_out_tuser(smem_writer_dbg_fifo_out_TUSER),
-        .dbg_fifo_out_tvalid(smem_writer_dbg_fifo_out_TVALID),
         .force_cache_update(smemw_ctl_force_cache_update),
-        .hsi_bus_tdata(smem_writer_hsi_bus_TDATA),
-        .hsi_bus_tuser(smem_writer_hsi_bus_TUSER),
-        .hsi_bus_tvalid(smem_writer_hsi_bus_TVALID),
         .hsi_clk(smem_writer_hsi_clk),
         .hsi_clk_in(clock_source_hsi_clk),
+        .hsi_cmd(smem_writer_hsi_cmd),
+        .hsi_data(smem_writer_hsi_data),
+        .hsi_valid(smem_writer_hsi_valid),
         .resetn(source_100mhz_sys_resetn),
         .select_hsi(smemw_ctl_select_hsi),
         .start(smemw_ctl_start));

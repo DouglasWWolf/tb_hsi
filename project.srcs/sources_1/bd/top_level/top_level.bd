@@ -35,7 +35,6 @@
           "cache_ctrl": "",
           "cache_bram": ""
         },
-        "system_ila_0": "",
         "smem_writer_hsi": ""
       },
       "fill": "",
@@ -2034,16 +2033,6 @@
             "mode": "Master",
             "vlnv_bus_definition": "xilinx.com:interface:aximm:1.0",
             "vlnv": "xilinx.com:interface:aximm_rtl:1.0"
-          },
-          "hsi_bus": {
-            "mode": "Master",
-            "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-            "vlnv": "xilinx.com:interface:axis_rtl:1.0"
-          },
-          "dbg_fifo_out": {
-            "mode": "Master",
-            "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-            "vlnv": "xilinx.com:interface:axis_rtl:1.0"
           }
         },
         "ports": {
@@ -2069,6 +2058,17 @@
           },
           "hsi_clk_in": {
             "direction": "I"
+          },
+          "hsi_data": {
+            "direction": "O",
+            "left": "31",
+            "right": "0"
+          },
+          "hsi_cmd": {
+            "direction": "O"
+          },
+          "hsi_valid": {
+            "direction": "O"
           },
           "hsi_clk": {
             "direction": "O"
@@ -2930,24 +2930,6 @@
               }
             }
           },
-          "system_ila_0": {
-            "vlnv": "xilinx.com:ip:system_ila:1.1",
-            "xci_name": "top_level_system_ila_0_5",
-            "xci_path": "ip/top_level_system_ila_0_5/top_level_system_ila_0_5.xci",
-            "inst_hier_path": "smem_writer/system_ila_0",
-            "parameters": {
-              "C_SLOT_0_INTF_TYPE": {
-                "value": "xilinx.com:interface:axis_rtl:1.0"
-              }
-            },
-            "interface_ports": {
-              "SLOT_0_AXIS": {
-                "mode": "Monitor",
-                "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-                "vlnv": "xilinx.com:interface:axis_rtl:1.0"
-              }
-            }
-          },
           "smem_writer_hsi": {
             "vlnv": "xilinx.com:module_ref:smem_writer_hsi:1.0",
             "xci_name": "top_level_smem_writer_hsi_0_0",
@@ -2958,236 +2940,17 @@
               "ref_name": "smem_writer_hsi",
               "boundary_crc": "0x0"
             },
-            "interface_ports": {
-              "dbg_fifo_in": {
-                "mode": "Master",
-                "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-                "vlnv": "xilinx.com:interface:axis_rtl:1.0",
-                "parameters": {
-                  "TDATA_NUM_BYTES": {
-                    "value": "4",
-                    "value_src": "constant"
-                  },
-                  "TDEST_WIDTH": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "TID_WIDTH": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "TUSER_WIDTH": {
-                    "value": "1",
-                    "value_src": "constant"
-                  },
-                  "HAS_TREADY": {
-                    "value": "1",
-                    "value_src": "constant"
-                  },
-                  "HAS_TSTRB": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "HAS_TKEEP": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "HAS_TLAST": {
-                    "value": "1",
-                    "value_src": "constant"
-                  },
-                  "FREQ_HZ": {
-                    "value": "50000000",
-                    "value_src": "ip_prop"
-                  },
-                  "PHASE": {
-                    "value": "0.0",
-                    "value_src": "ip_prop"
-                  },
-                  "CLK_DOMAIN": {
-                    "value": "/clock_source/system_clock_clk_out1",
-                    "value_src": "ip_prop"
-                  }
-                },
-                "port_maps": {
-                  "TDATA": {
-                    "physical_name": "dbg_fifo_in_tdata",
-                    "direction": "O",
-                    "left": "31",
-                    "right": "0"
-                  },
-                  "TLAST": {
-                    "physical_name": "dbg_fifo_in_tlast",
-                    "direction": "O"
-                  },
-                  "TUSER": {
-                    "physical_name": "dbg_fifo_in_tuser",
-                    "direction": "O"
-                  },
-                  "TVALID": {
-                    "physical_name": "dbg_fifo_in_tvalid",
-                    "direction": "O"
-                  },
-                  "TREADY": {
-                    "physical_name": "dbg_fifo_in_tready",
-                    "direction": "O"
-                  }
-                }
-              },
-              "dbg_fifo_out": {
-                "mode": "Master",
-                "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-                "vlnv": "xilinx.com:interface:axis_rtl:1.0",
-                "parameters": {
-                  "TDATA_NUM_BYTES": {
-                    "value": "4",
-                    "value_src": "constant"
-                  },
-                  "TDEST_WIDTH": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "TID_WIDTH": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "TUSER_WIDTH": {
-                    "value": "1",
-                    "value_src": "constant"
-                  },
-                  "HAS_TREADY": {
-                    "value": "1",
-                    "value_src": "constant"
-                  },
-                  "HAS_TSTRB": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "HAS_TKEEP": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "HAS_TLAST": {
-                    "value": "1",
-                    "value_src": "constant"
-                  },
-                  "FREQ_HZ": {
-                    "value": "40000000",
-                    "value_src": "ip_prop"
-                  },
-                  "PHASE": {
-                    "value": "0.0",
-                    "value_src": "ip_prop"
-                  },
-                  "CLK_DOMAIN": {
-                    "value": "/clock_source/system_clock_clk_out1",
-                    "value_src": "ip_prop"
-                  }
-                },
-                "port_maps": {
-                  "TDATA": {
-                    "physical_name": "dbg_fifo_out_tdata",
-                    "direction": "O",
-                    "left": "31",
-                    "right": "0"
-                  },
-                  "TLAST": {
-                    "physical_name": "dbg_fifo_out_tlast",
-                    "direction": "O"
-                  },
-                  "TUSER": {
-                    "physical_name": "dbg_fifo_out_tuser",
-                    "direction": "O"
-                  },
-                  "TVALID": {
-                    "physical_name": "dbg_fifo_out_tvalid",
-                    "direction": "O"
-                  },
-                  "TREADY": {
-                    "physical_name": "dbg_fifo_out_tready",
-                    "direction": "O"
-                  }
-                }
-              },
-              "hsi": {
-                "mode": "Master",
-                "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-                "vlnv": "xilinx.com:interface:axis_rtl:1.0",
-                "parameters": {
-                  "TDATA_NUM_BYTES": {
-                    "value": "4",
-                    "value_src": "constant"
-                  },
-                  "TDEST_WIDTH": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "TID_WIDTH": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "TUSER_WIDTH": {
-                    "value": "1",
-                    "value_src": "constant"
-                  },
-                  "HAS_TREADY": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "HAS_TSTRB": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "HAS_TKEEP": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "HAS_TLAST": {
-                    "value": "0",
-                    "value_src": "constant"
-                  },
-                  "FREQ_HZ": {
-                    "value": "40000000",
-                    "value_src": "ip_prop"
-                  },
-                  "PHASE": {
-                    "value": "0.0",
-                    "value_src": "ip_prop"
-                  },
-                  "CLK_DOMAIN": {
-                    "value": "/clock_source/system_clock_clk_out1",
-                    "value_src": "ip_prop"
-                  }
-                },
-                "port_maps": {
-                  "TDATA": {
-                    "physical_name": "hsi_tdata",
-                    "direction": "O",
-                    "left": "31",
-                    "right": "0"
-                  },
-                  "TUSER": {
-                    "physical_name": "hsi_tuser",
-                    "direction": "O"
-                  },
-                  "TVALID": {
-                    "physical_name": "hsi_tvalid",
-                    "direction": "O"
-                  }
-                }
-              }
-            },
             "ports": {
               "clk": {
                 "type": "clk",
                 "direction": "I",
                 "parameters": {
-                  "ASSOCIATED_BUSIF": {
-                    "value": "dbg_fifo_in",
-                    "value_src": "constant"
-                  },
                   "ASSOCIATED_RESET": {
                     "value": "resetn",
+                    "value_src": "constant"
+                  },
+                  "ASSOCIATED_BUSIF": {
+                    "value": "dbg_fifo_in",
                     "value_src": "constant"
                   },
                   "FREQ_HZ": {
@@ -3253,7 +3016,7 @@
                 "direction": "I",
                 "parameters": {
                   "ASSOCIATED_BUSIF": {
-                    "value": "hsi:dbg_fifo_out",
+                    "value": "dbg_fifo_out",
                     "value_src": "constant"
                   },
                   "FREQ_HZ": {
@@ -3270,6 +3033,17 @@
                   }
                 }
               },
+              "hsi_data": {
+                "direction": "O",
+                "left": "31",
+                "right": "0"
+              },
+              "hsi_cmd": {
+                "direction": "O"
+              },
+              "hsi_valid": {
+                "direction": "O"
+              },
               "async_enable": {
                 "direction": "I"
               }
@@ -3277,12 +3051,6 @@
           }
         },
         "interface_nets": {
-          "dbg_fifo_in": {
-            "interface_ports": [
-              "smem_writer_hsi/dbg_fifo_in",
-              "system_ila_0/SLOT_0_AXIS"
-            ]
-          },
           "fetch_abm_M_ABM": {
             "interface_ports": [
               "M_ABM",
@@ -3293,18 +3061,6 @@
             "interface_ports": [
               "fetch_abm/M_SMC",
               "cache/S_AXI"
-            ]
-          },
-          "smem_writer_hsi_dbg_fifo_out": {
-            "interface_ports": [
-              "dbg_fifo_out",
-              "smem_writer_hsi/dbg_fifo_out"
-            ]
-          },
-          "smem_writer_hsi_hsi": {
-            "interface_ports": [
-              "hsi_bus",
-              "smem_writer_hsi/hsi"
             ]
           }
         },
@@ -3395,6 +3151,24 @@
               "fetch_abm/smem_hsi_idle"
             ]
           },
+          "smem_writer_hsi_hsi_cmd": {
+            "ports": [
+              "smem_writer_hsi/hsi_cmd",
+              "hsi_cmd"
+            ]
+          },
+          "smem_writer_hsi_hsi_data": {
+            "ports": [
+              "smem_writer_hsi/hsi_data",
+              "hsi_data"
+            ]
+          },
+          "smem_writer_hsi_hsi_valid": {
+            "ports": [
+              "smem_writer_hsi/hsi_valid",
+              "hsi_valid"
+            ]
+          },
           "smem_writer_hsi_ready": {
             "ports": [
               "smem_writer_hsi/ready",
@@ -3407,7 +3181,6 @@
               "sim_writer/clk",
               "fetch_abm/clk",
               "cache/clk",
-              "system_ila_0/clk",
               "smem_writer_hsi/clk"
             ]
           },
@@ -4079,39 +3852,18 @@
       },
       "hsi_ila": {
         "vlnv": "xilinx.com:ip:system_ila:1.1",
-        "xci_name": "top_level_system_ila_0_4",
-        "xci_path": "ip/top_level_system_ila_0_4/top_level_system_ila_0_4.xci",
+        "xci_name": "top_level_system_ila_0_0",
+        "xci_path": "ip/top_level_system_ila_0_0/top_level_system_ila_0_0.xci",
         "inst_hier_path": "hsi_ila",
         "parameters": {
           "C_MON_TYPE": {
-            "value": "INTERFACE"
-          },
-          "C_NUM_MONITOR_SLOTS": {
-            "value": "2"
+            "value": "NATIVE"
           },
           "C_NUM_OF_PROBES": {
             "value": "3"
           },
-          "C_SLOT": {
-            "value": "1"
-          },
           "C_SLOT_0_INTF_TYPE": {
             "value": "xilinx.com:interface:axis_rtl:1.0"
-          },
-          "C_SLOT_1_INTF_TYPE": {
-            "value": "xilinx.com:interface:axis_rtl:1.0"
-          }
-        },
-        "interface_ports": {
-          "SLOT_0_AXIS": {
-            "mode": "Monitor",
-            "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-            "vlnv": "xilinx.com:interface:axis_rtl:1.0"
-          },
-          "SLOT_1_AXIS": {
-            "mode": "Monitor",
-            "vlnv_bus_definition": "xilinx.com:interface:axis:1.0",
-            "vlnv": "xilinx.com:interface:axis_rtl:1.0"
           }
         }
       }
@@ -4139,18 +3891,6 @@
         "interface_ports": [
           "poke/M_AXI",
           "BRAM/S02_AXI"
-        ]
-      },
-      "smem_writer_dbg_fifo_out": {
-        "interface_ports": [
-          "smem_writer/dbg_fifo_out",
-          "hsi_ila/SLOT_1_AXIS"
-        ]
-      },
-      "smem_writer_hsi_bus": {
-        "interface_ports": [
-          "smem_writer/hsi_bus",
-          "hsi_ila/SLOT_0_AXIS"
         ]
       },
       "system_interconnect_M00_AXI": {
@@ -4237,6 +3977,24 @@
         "ports": [
           "smem_writer/hsi_clk",
           "hsi_ila/clk"
+        ]
+      },
+      "smem_writer_hsi_cmd": {
+        "ports": [
+          "smem_writer/hsi_cmd",
+          "hsi_ila/probe1"
+        ]
+      },
+      "smem_writer_hsi_data": {
+        "ports": [
+          "smem_writer/hsi_data",
+          "hsi_ila/probe2"
+        ]
+      },
+      "smem_writer_hsi_valid": {
+        "ports": [
+          "smem_writer/hsi_valid",
+          "hsi_ila/probe0"
         ]
       },
       "smemw_ctl_force_cache_update": {
