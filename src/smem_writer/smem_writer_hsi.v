@@ -16,8 +16,27 @@
      until 'async_enable' is de-asserted.  
 
 */
+
+`define DEBUG_PORTS
 module smem_writer_hsi # (parameter DW=512, HSI_IDLE_COUNT = 7)
 (
+    
+    `ifdef DEBUG_PORTS
+        output[31:0] dbg_fifo_in_tdata,
+        output       dbg_fifo_in_tuser,
+        output       dbg_fifo_in_tlast,
+        output       dbg_fifo_in_tvalid,
+        output       dbg_fifo_in_tready,
+
+        output[31:0] dbg_fifo_out_tdata,
+        output       dbg_fifo_out_tuser,
+        output       dbg_fifo_out_tlast,
+        output       dbg_fifo_out_tvalid,
+        output       dbg_fifo_out_tready,
+    `endif
+
+    (* X_INTERFACE_INFO      = "xilinx.com:signal:clock:1.0 clk CLK" *)
+    (* X_INTERFACE_PARAMETER = "ASSOCIATED_RESET resetn, ASSOCIATED_BUSIF dbg_fifo_in" *)
     input       clk,
     input       resetn,
 
@@ -40,7 +59,7 @@ module smem_writer_hsi # (parameter DW=512, HSI_IDLE_COUNT = 7)
 
     // This clock drives the HSI bus
     (* X_INTERFACE_INFO      = "xilinx.com:signal:clock:1.0 hsi_clk CLK" *)
-    (* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF hsi" *)
+    (* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF hsi:dbg_fifo_out" *)
     input            hsi_clk,
 
     //----------------------------------------------------------
@@ -170,8 +189,7 @@ assign fifo_in_tuser  = (fsm_state == FSM_EMIT_CMD);
 assign fifo_in_tlast  = (fsm_state == FSM_EMIT_DATA && entry_number == LAST_ENTRY);
 assign fifo_in_tvalid = (fsm_state != FSM_IDLE && resetn == 1); 
 //=============================================================================
-
-
+ 
 
 //=============================================================================
 // When we're driving data out of the AXI stream, tdata is always either
@@ -215,10 +233,10 @@ wire hsi_resetn;
 wire hsi_fifo_empty;
 
 //=============================================================================
-// This state machines receives data from the FIFO and drives it out the HSI
-// bus.  The last entry for a row has TLAST asserted, and after the last entry
-// for the row is detected, the HSI bus goes idle for a few cycles to allow the
-// sensor-chip time to write the row of data to SMEM
+// This state machine receives data from the FIFO and drives it out the HSI
+// bus.  The last FIFO entry for a row has TLAST asserted, and after the last
+// entry for the row is detected, the HSI bus goes idle for a few cycles to 
+// allow the sensor-chip time to write the row of data to SMEM
 //
 // HSI bus output is suspended when "hsi_enable" is low
 //=============================================================================
@@ -337,27 +355,27 @@ xpm_fifo_axis #
    .FIFO_MEMORY_TYPE("auto"),
    .PACKET_FIFO     ("false"),
    .USE_ADV_FEATURES("0000"),
-   .CDC_SYNC_STAGES (2),
+   .CDC_SYNC_STAGES (4),
    .CLOCKING_MODE   ("independent_clock")
 )
 hsi_fifo
 (
     // Clock and reset
-   .s_aclk   (clk       ),
-   .m_aclk   (hsi_clk   ),
-   .s_aresetn(resetn    ),
+   .s_aclk   (clk    ),
+   .m_aclk   (hsi_clk),
+   .s_aresetn(resetn ),
 
     // This input bus of the FIFO
    .s_axis_tdata (fifo_in_tdata ),
    .s_axis_tuser (fifo_in_tuser ),
-   .s_axis_tlast (fifo_in_last  ),
+   .s_axis_tlast (fifo_in_tlast ),
    .s_axis_tvalid(fifo_in_tvalid),
    .s_axis_tready(fifo_in_tready),
 
     // The output bus of the FIFO
    .m_axis_tdata (fifo_out_tdata ),
    .m_axis_tuser (fifo_out_tuser ),
-   .m_axis_tlast (fifo_out_last  ),
+   .m_axis_tlast (fifo_out_tlast ),
    .m_axis_tvalid(fifo_out_tvalid),
    .m_axis_tready(fifo_out_tready),
 
@@ -388,6 +406,19 @@ hsi_fifo
 //====================================================================================
 
 
+`ifdef DEBUG_PORTS
+    assign  dbg_fifo_in_tdata   = fifo_in_tdata  ; 
+    assign  dbg_fifo_in_tuser   = fifo_in_tuser  ;  
+    assign  dbg_fifo_in_tlast   = fifo_in_tlast  ; 
+    assign  dbg_fifo_in_tvalid  = fifo_in_tvalid ;
+    assign  dbg_fifo_in_tready  = fifo_in_tready ;
+
+    assign  dbg_fifo_out_tdata  = fifo_out_tdata ; 
+    assign  dbg_fifo_out_tuser  = fifo_out_tuser ;  
+    assign  dbg_fifo_out_tlast  = fifo_out_tlast ; 
+    assign  dbg_fifo_out_tvalid = fifo_out_tvalid;
+    assign  dbg_fifo_out_tready = fifo_out_tready;
+`endif
 
 
 endmodule
