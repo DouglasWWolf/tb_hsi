@@ -357,7 +357,7 @@ xpm_fifo_axis #
    .FIFO_MEMORY_TYPE("auto"),
    .PACKET_FIFO     ("false"),
    .USE_ADV_FEATURES("0000"),
-   .CDC_SYNC_STAGES (4),
+   .CDC_SYNC_STAGES (3),
    .CLOCKING_MODE   ("independent_clock")
 )
 hsi_fifo
