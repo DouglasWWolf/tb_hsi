@@ -17,6 +17,9 @@ if [ ! -z $1 ]; then
     shift
 fi
 
+# This signal is rising-edge sensitive
 axi $REG_FORCE_CACHE $force_cache
+axi $REG_FORCE_CACHE 0
+
 axi $REG_START       1
 

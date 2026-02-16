@@ -31,9 +31,10 @@ module fetch_abm # ( parameter AW=20, DW=512, IW=2, BRAM_SIZE=32'h1000)
     // occur over the HSI bus.  0 = perform SMEM-write over the SPI bus
     input select_hsi,
 
-    // If this is asserted, the cache is alway updated from the ABM,
-    // regardless of whether the ABM and the cache already match.
-    input force_cache_update,
+    // A rising-edge means "the next time we fetch an ABM, force all rows
+    // to be written to cache/SMEM, regardless of whether the ABM and the
+    // cache already match.
+    input force_smem_update,
 
     // This strobes high to write a row to SMEM via HSI
     output write_smem_via_hsi,
@@ -193,7 +194,6 @@ reg smem_bus_type;
 wire smem_update_ready = (smem_bus_type == BUS_TYPE_SPI) ? smem_spi_ready
                                                          : smem_hsi_ready;
 
-
 // Asserted when the SMEM row-updater is idle (i.e, the row is complete)
 wire smem_update_idle  = (smem_bus_type == BUS_TYPE_SPI) ? smem_spi_idle 
                                                          : smem_hsi_idle;
@@ -218,7 +218,6 @@ reg start_smem_write;
 assign write_smem_via_hsi = (smem_bus_type == BUS_TYPE_HSI) ? start_smem_write : 0;
 assign write_smem_via_spi = (smem_bus_type == BUS_TYPE_SPI) ? start_smem_write : 0;
 
-
 // When this goes high, the current abm_data is written to cache
 reg start_cache_write;
 
@@ -229,6 +228,16 @@ wire cache_write_complete;
 // receiving cache data knows that it can fetch the next cache row
 reg fetch_next_cache_row;
 
+// The history of the "force_smem_update" input (for edge dection)
+reg[1:0] r_force_smem_update;
+
+// Detect the rising edge of the "force_smem_update"
+wire force_smem_update_edge = (r_force_smem_update == 2'b01);
+
+// If this is asserted, all rows of SMEM/cache are updated instead
+// of just the changed rows
+reg update_all_rows;
+
 // There are 64 entries in a 256-byte row.  This contains a bitmap of
 // which entries from "abm_data[]" don't match the corresponding entries
 // in "smc_data[]"
@@ -237,10 +246,10 @@ wire[ENTRIES_PER_ROW-1:0] mismatch_map;
 // Fill in "mismatch_map" with a bitmap of which cache entries don't match the
 // correspoding ABM entry.
 for (i=0; i<DB/4; i=i+1) begin
-    assign mismatch_map[i+ 0] = (abm_data[0][i*32 +: 32] != smc_data[0][i*32 +: 32]) | force_cache_update;
-    assign mismatch_map[i+16] = (abm_data[1][i*32 +: 32] != smc_data[1][i*32 +: 32]) | force_cache_update;
-    assign mismatch_map[i+32] = (abm_data[2][i*32 +: 32] != smc_data[2][i*32 +: 32]) | force_cache_update;    
-    assign mismatch_map[i+48] = (abm_data[3][i*32 +: 32] != smc_data[3][i*32 +: 32]) | force_cache_update;        
+    assign mismatch_map[i+ 0] = (abm_data[0][i*32 +: 32] != smc_data[0][i*32 +: 32]) | update_all_rows;
+    assign mismatch_map[i+16] = (abm_data[1][i*32 +: 32] != smc_data[1][i*32 +: 32]) | update_all_rows;
+    assign mismatch_map[i+32] = (abm_data[2][i*32 +: 32] != smc_data[2][i*32 +: 32]) | update_all_rows;    
+    assign mismatch_map[i+48] = (abm_data[3][i*32 +: 32] != smc_data[3][i*32 +: 32]) | update_all_rows;        
 end
 
 //=============================================================================
@@ -454,6 +463,12 @@ end
 
 //=============================================================================
 // This state machine receives rows of data from the ABM BRAM
+//
+// The "update_all_rows" flag, is asserted when we see the rising edge of the
+// input signal "force_smem_update".  When "update_all_rows" is asserted, it 
+// causes all rows of data to be written to SMEM and cache instead of just the
+// changed rows.  We clear the "update_all_rows" flag after a complete update
+// of the cache/SMEM
 //=============================================================================
 reg[2:0] abm_r_state;
 localparam ABM_R_IDLE             = 0;
@@ -469,8 +484,15 @@ always @(posedge clk) begin
     start_cache_write    <= 0;
     start_smem_write     <= 0;
 
+    // If we sense a rising edge on "force_smem_update", the next ABM
+    // that we fetch is going to force all rows to be written to cache
+    // and SMEM
+    if (force_smem_update_edge)
+        update_all_rows <= 1;
+
     if (resetn == 0) begin
-        abm_r_state <= 0;
+        abm_r_state     <= 0;
+        update_all_rows <= 0;
     end
 
     else case(abm_r_state)
@@ -482,7 +504,6 @@ always @(posedge clk) begin
                 abm_row_index <= 0;
                 abm_r_state   <= ABM_R_READ;
             end
-
 
         // Here we read in cycles of ABM data and 
         // store them until we have an entire row
@@ -548,7 +569,10 @@ always @(posedge clk) begin
 
         // Here we wait for the final SMEM row-update to complete
         ABM_R_WAIT_LAST:
-            if (smem_update_idle) abm_r_state <= ABM_R_IDLE;
+            if (smem_update_idle) begin
+                update_all_rows <= 0;
+                abm_r_state     <= ABM_R_IDLE;
+            end
 
     endcase
 
@@ -556,10 +580,14 @@ end
 //=============================================================================
 
 
-
-
-
-
+//=============================================================================
+// Keep a history of the "force_smem_update" input
+//=============================================================================
+always @(posedge clk) begin
+    r_force_smem_update[1] <= r_force_smem_update[0];
+    r_force_smem_update[0] <= force_smem_update;
+end
+//=============================================================================
 
 
 //=============================================================================
