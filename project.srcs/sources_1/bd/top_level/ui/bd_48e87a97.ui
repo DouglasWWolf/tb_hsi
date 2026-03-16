@@ -1,0 +1,84 @@
+{
+   "ActiveEmotionalView":"No Loops",
+   "Default View_ScaleFactor":"1.0",
+   "Default View_TopLeft":"-395,-143",
+   "DisplayTieOff":"1",
+   "ExpandedHierarchyInLayout":"",
+   "No Loops_ExpandedHierarchyInLayout":"",
+   "No Loops_Layout":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
+#  -string -flagsOSRD
+preplace port port-id_resetn -pg 1 -lvl 0 -x -100 -y 130 -defaultsOSRD
+preplace port port-id_clk -pg 1 -lvl 0 -x -100 -y 150 -defaultsOSRD
+preplace port port-id_hsi_clk_in -pg 1 -lvl 0 -x -100 -y 290 -defaultsOSRD
+preplace port port-id_hsi_cmd -pg 1 -lvl 4 -x 1140 -y 110 -defaultsOSRD
+preplace port port-id_hsi_valid -pg 1 -lvl 4 -x 1140 -y 130 -defaultsOSRD
+preplace port port-id_async_enable -pg 1 -lvl 0 -x -100 -y 310 -defaultsOSRD
+preplace port port-id_i_start -pg 1 -lvl 0 -x -100 -y 110 -defaultsOSRD
+preplace port port-id_ready -pg 1 -lvl 0 -x -100 -y 230 -defaultsOSRD -left
+preplace port port-id_done -pg 1 -lvl 0 -x -100 -y 210 -defaultsOSRD -left
+preplace port port-id_smem_write_stb -pg 1 -lvl 0 -x -100 -y 190 -defaultsOSRD -left
+preplace portBus hsi_data -pg 1 -lvl 4 -x 1140 -y 90 -defaultsOSRD
+preplace portBus i_smem_data -pg 1 -lvl 0 -x -100 -y 90 -defaultsOSRD
+preplace portBus i_chunk_index -pg 1 -lvl 0 -x -100 -y 170 -defaultsOSRD
+preplace inst axis_data_fifo -pg 1 -lvl 2 -x 640 -y 90 -swap {0 1 2 3 4 5 6 7 8 9 10 11 13 12 14} -defaultsOSRD -pinDir S_AXIS left -pinY S_AXIS 0L -pinDir M_AXIS right -pinY M_AXIS 0R -pinDir s_axis_aresetn left -pinY s_axis_aresetn 40L -pinDir s_axis_aclk left -pinY s_axis_aclk 20L -pinDir m_axis_aclk left -pinY m_axis_aclk 80L
+preplace inst smem_writer_hsi_s1 -pg 1 -lvl 1 -x 240 -y 90 -swap {0 1 2 3 4 5 9 8 10 6 7 12 11 14 13} -defaultsOSRD -pinDir fifo_in right -pinY fifo_in 0R -pinDir fifo_in.fifo_in_tdata right -pinY fifo_in.fifo_in_tdata 20R -pinDir fifo_in.fifo_in_tlast right -pinY fifo_in.fifo_in_tlast 40R -pinDir fifo_in.fifo_in_tuser right -pinY fifo_in.fifo_in_tuser 60R -pinDir fifo_in.fifo_in_tvalid right -pinY fifo_in.fifo_in_tvalid 80R -pinDir fifo_in.fifo_in_tready right -pinY fifo_in.fifo_in_tready 100R -pinDir clk left -pinY clk 60L -pinDir resetn left -pinY resetn 40L -pinBusDir i_chunk_index left -pinBusY i_chunk_index 80L -pinBusDir i_smem_data left -pinBusY i_smem_data 0L -pinDir i_start left -pinY i_start 20L -pinDir ready left -pinY ready 120L -pinDir done left -pinY done 100L -pinDir async_fifo_empty right -pinY async_fifo_empty 140R -pinDir smem_write_stb right -pinY smem_write_stb 120R
+preplace inst smem_writer_hsi_s2 -pg 1 -lvl 3 -x 970 -y 90 -swap {0 1 2 3 4 5 11 6 8 9 10 12 7} -defaultsOSRD -pinDir fifo_out left -pinY fifo_out 0L -pinDir hsi_clk left -pinY hsi_clk 160L -pinDir async_resetn left -pinY async_resetn 20L -pinBusDir hsi_data right -pinBusY hsi_data 0R -pinDir hsi_cmd right -pinY hsi_cmd 20R -pinDir hsi_valid right -pinY hsi_valid 40R -pinDir async_enable left -pinY async_enable 220L -pinDir fifo_empty left -pinY fifo_empty 140L
+preplace inst smem_writer_hsi -pg 1 -lvl 1 -x 240 -y 510 -swap {2 1 0 3 5 4 6 7 8 9 10 11 12} -defaultsOSRD -pinDir clk left -pinY clk 40L -pinDir resetn left -pinY resetn 20L -pinBusDir i_smem_data left -pinBusY i_smem_data 0L -pinBusDir i_chunk_index left -pinBusY i_chunk_index 60L -pinDir i_start left -pinY i_start 100L -pinDir smem_write_stb left -pinY smem_write_stb 80L -pinDir done right -pinY done 0R -pinDir ready right -pinY ready 20R -pinDir hsi_clk left -pinY hsi_clk 120L -pinBusDir hsi_data right -pinBusY hsi_data 40R -pinDir hsi_cmd right -pinY hsi_cmd 60R -pinDir hsi_valid right -pinY hsi_valid 80R -pinDir async_enable left -pinY async_enable 140L
+preplace netloc smem_writer_hsi_s2_fifo_empty 1 1 2 N 230 N
+preplace netloc source_100mhz_sys_resetn 1 0 3 40 30 460 30 760
+preplace netloc source_100mhz_sys_clk 1 0 2 -20 10 440
+preplace netloc hsi_clk_1 1 0 3 N 290 440 250 NJ
+preplace netloc smem_writer_hsi_s2_hsi_data 1 3 1 NJ 90
+preplace netloc smem_writer_hsi_s2_hsi_cmd 1 3 1 NJ 110
+preplace netloc smem_writer_hsi_s2_hsi_valid 1 3 1 NJ 130
+preplace netloc async_enable_1 1 0 3 NJ 310 N 310 NJ
+preplace netloc fetch_abm_smem_data 1 0 1 20J 90n
+preplace netloc fetch_abm_write_smem_via_hsi 1 0 1 NJ 110
+preplace netloc smem_writer_hsi_s1_0_ready 1 0 1 0 210n
+preplace netloc smem_writer_hsi_s1_0_done 1 0 1 -40 190n
+preplace netloc i_chunk_index_1 1 0 1 -60 170n
+preplace netloc smem_writer_hsi_smem_write_stb 1 0 1 -80J 190n
+preplace netloc smem_writer_hsi_s1_0_fifo_in 1 1 1 N 90
+preplace netloc axis_data_fifo_M_AXIS 1 2 1 N 90
+levelinfo -pg 1 -100 240 640 970 1140
+pagesize -pg 1 -db -bbox -sgen -310 0 1300 710
+",
+   "No Loops_ScaleFactor":"0.945999",
+   "No Loops_TopLeft":"-245,-22",
+   "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
+#  -string -flagsOSRD
+preplace port port-id_resetn -pg 1 -lvl 0 -x 0 -y 230 -defaultsOSRD
+preplace port port-id_clk -pg 1 -lvl 0 -x 0 -y 250 -defaultsOSRD
+preplace port port-id_hsi_clk_in -pg 1 -lvl 0 -x 0 -y 350 -defaultsOSRD
+preplace port port-id_hsi_cmd -pg 1 -lvl 3 -x 670 -y 340 -defaultsOSRD
+preplace port port-id_hsi_valid -pg 1 -lvl 3 -x 670 -y 360 -defaultsOSRD
+preplace port port-id_async_enable -pg 1 -lvl 0 -x 0 -y 420 -defaultsOSRD
+preplace port port-id_i_start -pg 1 -lvl 0 -x 0 -y 130 -defaultsOSRD
+preplace port port-id_ready -pg 1 -lvl 3 -x 670 -y 90 -defaultsOSRD
+preplace port port-id_done -pg 1 -lvl 3 -x 670 -y 110 -defaultsOSRD
+preplace port port-id_smem_write_stb -pg 1 -lvl 3 -x 670 -y 130 -defaultsOSRD
+preplace portBus hsi_data -pg 1 -lvl 3 -x 670 -y 320 -defaultsOSRD
+preplace portBus i_smem_data -pg 1 -lvl 0 -x 0 -y 110 -defaultsOSRD
+preplace inst axis_data_fifo -pg 1 -lvl 1 -x 160 -y 320 -defaultsOSRD
+preplace inst smem_writer_hsi_s2 -pg 1 -lvl 2 -x 470 -y 350 -defaultsOSRD
+preplace inst smem_writer_hsi_s1 -pg 1 -lvl 2 -x 470 -y 100 -defaultsOSRD
+preplace netloc smem_writer_hsi_s2_fifo_empty 1 1 2 300 210 640
+preplace netloc source_100mhz_sys_resetn 1 0 2 20 230 290
+preplace netloc source_100mhz_sys_clk 1 0 2 30 50 NJ
+preplace netloc hsi_clk_1 1 0 2 30 410 280J
+preplace netloc smem_writer_hsi_s2_hsi_data 1 2 1 NJ 320
+preplace netloc smem_writer_hsi_s2_hsi_cmd 1 2 1 NJ 340
+preplace netloc smem_writer_hsi_s2_hsi_valid 1 2 1 NJ 360
+preplace netloc async_enable_1 1 0 2 NJ 420 300J
+preplace netloc fetch_abm_smem_data 1 0 2 NJ 110 NJ
+preplace netloc fetch_abm_write_smem_via_hsi 1 0 2 NJ 130 NJ
+preplace netloc smem_writer_hsi_s1_0_ready 1 2 1 NJ 90
+preplace netloc smem_writer_hsi_s1_0_done 1 2 1 NJ 110
+preplace netloc smem_writer_hsi_s1_0_smem_write_stb 1 2 1 NJ 130
+preplace netloc smem_writer_hsi_s1_0_fifo_in 1 0 3 40 220 NJ 220 650
+preplace netloc axis_data_fifo_M_AXIS 1 1 1 N 320
+levelinfo -pg 1 0 160 470 670
+pagesize -pg 1 -db -bbox -sgen -190 0 820 440
+"
+}
+
