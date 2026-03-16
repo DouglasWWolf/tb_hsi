@@ -58,7 +58,7 @@
 */
 
 
-module smem_writer_hsi_s2 # (HSI_IDLE_COUNT = 7)
+module smem_writer_hsi_s2 # (HSI_IDLE_COUNT = 8)
 (
     
     (* X_INTERFACE_INFO      = "xilinx.com:signal:clock:1.0 clk CLK" *)

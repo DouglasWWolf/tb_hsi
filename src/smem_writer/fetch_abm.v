@@ -79,8 +79,7 @@ module fetch_abm # ( parameter AW=20, DW=512, IW=2, BRAM_SIZE=32'h10_0000)
     input spi_smem_write_stb, hsi_smem_write_stb,
     
     // After an ABM has been fetched and written to SMEM, these indicate how
-    // many SMEM chunks were updated and how many individual SMEM words were
-    // updated 
+    // many SMEM chunks were updated
     output reg[31:0] smem_rows_updated, smem_words_updated, 
 
     //==================  This is an AXI4-master interface  ===================

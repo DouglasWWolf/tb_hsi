@@ -63,7 +63,10 @@ module smem_writer_spi # (SIM_SPI = 0)
     input       clk,
     input       resetn,
 
-    // When start strobes high, this holds 1 chunk of data to write to SMEM    
+
+    // When start strobes high, this holds 1 chunk of data to write to SMEM.
+    // The individual 32-bit words in this field must be in little-endian 
+    // byte order    
     input[2047:0] i_smem_data,
     
     // When start strobes high, this is the chunk-index in the ABM

@@ -70,7 +70,9 @@ module smem_writer_hsi_s1
     // When start strobes high, this is the chunk-index in the ABM
     input[31:0] i_chunk_index,
 
-    // When start strobes high, this holds 1 chunk of data to write to SMEM    
+    // When start strobes high, this holds 1 chunk of data to write to SMEM.
+    // The individual 32-bit words in this field must be in little-endian 
+    // byte order    
     input[2047:0] i_smem_data,
 
     // When this goes high, we will start pushing data to the output stream
@@ -134,6 +136,15 @@ reg[ 8:0] row;
 
 
 //=============================================================================
+// This function swaps big-endian to little-endian or vice-versa
+//=============================================================================
+function [31:0] byte_swap (input [31:0] value);
+    byte_swap = {value[7:0], value[15:8], value[23:16], value[31:24]};
+endfunction
+//=============================================================================
+
+
+//=============================================================================
 // Register the input fields to make timing closure simpler
 //=============================================================================
 always @(posedge clk) begin
@@ -154,9 +165,13 @@ end
 
 //=============================================================================
 // This registers "smem_data" into an array of 64 32-bit words
+//
+// The data words are in little-endian byte order when we receive them and
+// the HSI bus expects data-words to be big-endian, so we swap the byte
+// order here.
 //=============================================================================
 for (i=0; i<WORDS_PER_CHUNK; i=i+1) begin
-    always @(posedge clk) element[i] <= i_smem_data[i*32 +: 32];
+    always @(posedge clk) element[i] <= byte_swap(i_smem_data[i*32 +: 32]);
 end
 //=============================================================================
 
