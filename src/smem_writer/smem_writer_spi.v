@@ -133,16 +133,14 @@ wire fifo_empty;
 // This value will increment from 0 to 63
 reg[5:0] word_number;
 
-
 //-----------------------------------------------------------------------------
 // These are registered versions of the corresponding input ports
 //-----------------------------------------------------------------------------
-reg[31:0] chunk_index;
 reg[63:0] mismatch_bitmap;
 reg[31:0] element[0:WORDS_PER_CHUNK-1];
 reg       start;
-wire[2:0] bank = chunk_index[ 2:0];
-wire[8:0] row  = chunk_index[11:3];
+reg[ 2:0] bank;
+reg[ 8:0] row;
 //-----------------------------------------------------------------------------
 
 
@@ -154,7 +152,8 @@ always @(posedge clk) begin
         start <= 0;
     else begin
         start           <= i_start;
-        chunk_index     <= i_chunk_index;
+        bank            <= i_chunk_index[ 2:0];
+        row             <= i_chunk_index[11:3];
         mismatch_bitmap <= i_mismatch_bitmap;
     end
 end
