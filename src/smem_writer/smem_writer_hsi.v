@@ -67,7 +67,9 @@ module smem_writer_hsi # (parameter HSI_IDLE_COUNT = 7)
     input           clk,
     input           resetn,
 
-    input  [2047:0] i_smem_data,
+    // Individual 32-bit words in i_smem_data must be in little-endian
+    // byte order!
+    input  [2047:0] i_smem_data,  
     input  [  31:0] i_chunk_index,
     input           i_start,
 
