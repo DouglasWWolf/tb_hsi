@@ -33,9 +33,9 @@
         },
         "system_ila_0": "",
         "sim_writer": "",
-        "fetch_abm": "",
         "smem_writer_spi": "",
-        "smem_writer_hsi": ""
+        "smem_writer_hsi": "",
+        "fetch_abm": ""
       },
       "one": "",
       "hsi_ila": "",
@@ -1772,6 +1772,158 @@
               }
             }
           },
+          "smem_writer_spi": {
+            "vlnv": "xilinx.com:module_ref:smem_writer_spi:1.0",
+            "xci_name": "top_level_smem_writer_spi_0_1",
+            "xci_path": "ip/top_level_smem_writer_spi_0_1/top_level_smem_writer_spi_0_1.xci",
+            "inst_hier_path": "smem_writer/smem_writer_spi",
+            "reference_info": {
+              "ref_type": "hdl",
+              "ref_name": "smem_writer_spi",
+              "boundary_crc": "0x0"
+            },
+            "ports": {
+              "clk": {
+                "type": "clk",
+                "direction": "I",
+                "parameters": {
+                  "ASSOCIATED_RESET": {
+                    "value": "resetn",
+                    "value_src": "constant"
+                  },
+                  "ASSOCIATED_BUSIF": {
+                    "value": "dbg_fifo_in:dbg_fifo_out",
+                    "value_src": "constant"
+                  }
+                }
+              },
+              "resetn": {
+                "type": "rst",
+                "direction": "I",
+                "parameters": {
+                  "POLARITY": {
+                    "value": "ACTIVE_LOW",
+                    "value_src": "constant"
+                  }
+                }
+              },
+              "i_smem_data": {
+                "direction": "I",
+                "left": "2047",
+                "right": "0"
+              },
+              "i_chunk_index": {
+                "direction": "I",
+                "left": "31",
+                "right": "0"
+              },
+              "i_mismatch_bitmap": {
+                "direction": "I",
+                "left": "63",
+                "right": "0"
+              },
+              "i_start": {
+                "direction": "I"
+              },
+              "ready": {
+                "direction": "O"
+              },
+              "done": {
+                "direction": "O"
+              },
+              "spi_addr": {
+                "direction": "O",
+                "left": "31",
+                "right": "0"
+              },
+              "spi_wdata": {
+                "direction": "O",
+                "left": "31",
+                "right": "0"
+              },
+              "spi_start": {
+                "direction": "O",
+                "left": "1",
+                "right": "0"
+              },
+              "spi_busy": {
+                "direction": "I"
+              },
+              "async_enable": {
+                "direction": "I"
+              },
+              "smem_write_stb": {
+                "direction": "O"
+              }
+            }
+          },
+          "smem_writer_hsi": {
+            "vlnv": "xilinx.com:module_ref:smem_writer_hsi:1.0",
+            "xci_name": "top_level_smem_writer_hsi_0_0",
+            "xci_path": "ip/top_level_smem_writer_hsi_0_0/top_level_smem_writer_hsi_0_0.xci",
+            "inst_hier_path": "smem_writer/smem_writer_hsi",
+            "reference_info": {
+              "ref_type": "hdl",
+              "ref_name": "smem_writer_hsi",
+              "boundary_crc": "0x0"
+            },
+            "ports": {
+              "clk": {
+                "type": "clk",
+                "direction": "I"
+              },
+              "resetn": {
+                "type": "rst",
+                "direction": "I",
+                "parameters": {
+                  "POLARITY": {
+                    "value": "ACTIVE_LOW",
+                    "value_src": "constant"
+                  }
+                }
+              },
+              "i_smem_data": {
+                "direction": "I",
+                "left": "2047",
+                "right": "0"
+              },
+              "i_chunk_index": {
+                "direction": "I",
+                "left": "31",
+                "right": "0"
+              },
+              "i_start": {
+                "direction": "I"
+              },
+              "smem_write_stb": {
+                "direction": "O"
+              },
+              "done": {
+                "direction": "O"
+              },
+              "ready": {
+                "direction": "O"
+              },
+              "hsi_clk": {
+                "type": "clk",
+                "direction": "I"
+              },
+              "hsi_data": {
+                "direction": "O",
+                "left": "31",
+                "right": "0"
+              },
+              "hsi_cmd": {
+                "direction": "O"
+              },
+              "hsi_valid": {
+                "direction": "O"
+              },
+              "async_enable": {
+                "direction": "I"
+              }
+            }
+          },
           "fetch_abm": {
             "vlnv": "xilinx.com:module_ref:fetch_abm:1.0",
             "xci_name": "top_level_fetch_abm_0_0",
@@ -2493,158 +2645,6 @@
                 }
               }
             }
-          },
-          "smem_writer_spi": {
-            "vlnv": "xilinx.com:module_ref:smem_writer_spi:1.0",
-            "xci_name": "top_level_smem_writer_spi_0_1",
-            "xci_path": "ip/top_level_smem_writer_spi_0_1/top_level_smem_writer_spi_0_1.xci",
-            "inst_hier_path": "smem_writer/smem_writer_spi",
-            "reference_info": {
-              "ref_type": "hdl",
-              "ref_name": "smem_writer_spi",
-              "boundary_crc": "0x0"
-            },
-            "ports": {
-              "clk": {
-                "type": "clk",
-                "direction": "I",
-                "parameters": {
-                  "ASSOCIATED_RESET": {
-                    "value": "resetn",
-                    "value_src": "constant"
-                  },
-                  "ASSOCIATED_BUSIF": {
-                    "value": "dbg_fifo_in:dbg_fifo_out",
-                    "value_src": "constant"
-                  }
-                }
-              },
-              "resetn": {
-                "type": "rst",
-                "direction": "I",
-                "parameters": {
-                  "POLARITY": {
-                    "value": "ACTIVE_LOW",
-                    "value_src": "constant"
-                  }
-                }
-              },
-              "i_smem_data": {
-                "direction": "I",
-                "left": "2047",
-                "right": "0"
-              },
-              "i_chunk_index": {
-                "direction": "I",
-                "left": "31",
-                "right": "0"
-              },
-              "i_mismatch_bitmap": {
-                "direction": "I",
-                "left": "63",
-                "right": "0"
-              },
-              "i_start": {
-                "direction": "I"
-              },
-              "ready": {
-                "direction": "O"
-              },
-              "done": {
-                "direction": "O"
-              },
-              "spi_addr": {
-                "direction": "O",
-                "left": "31",
-                "right": "0"
-              },
-              "spi_wdata": {
-                "direction": "O",
-                "left": "31",
-                "right": "0"
-              },
-              "spi_start": {
-                "direction": "O",
-                "left": "1",
-                "right": "0"
-              },
-              "spi_busy": {
-                "direction": "I"
-              },
-              "async_enable": {
-                "direction": "I"
-              },
-              "smem_write_stb": {
-                "direction": "O"
-              }
-            }
-          },
-          "smem_writer_hsi": {
-            "vlnv": "xilinx.com:module_ref:smem_writer_hsi:1.0",
-            "xci_name": "top_level_smem_writer_hsi_0_0",
-            "xci_path": "ip/top_level_smem_writer_hsi_0_0/top_level_smem_writer_hsi_0_0.xci",
-            "inst_hier_path": "smem_writer/smem_writer_hsi",
-            "reference_info": {
-              "ref_type": "hdl",
-              "ref_name": "smem_writer_hsi",
-              "boundary_crc": "0x0"
-            },
-            "ports": {
-              "clk": {
-                "type": "clk",
-                "direction": "I"
-              },
-              "resetn": {
-                "type": "rst",
-                "direction": "I",
-                "parameters": {
-                  "POLARITY": {
-                    "value": "ACTIVE_LOW",
-                    "value_src": "constant"
-                  }
-                }
-              },
-              "i_smem_data": {
-                "direction": "I",
-                "left": "2047",
-                "right": "0"
-              },
-              "i_chunk_index": {
-                "direction": "I",
-                "left": "31",
-                "right": "0"
-              },
-              "i_start": {
-                "direction": "I"
-              },
-              "smem_write_stb": {
-                "direction": "O"
-              },
-              "done": {
-                "direction": "O"
-              },
-              "ready": {
-                "direction": "O"
-              },
-              "hsi_clk": {
-                "type": "clk",
-                "direction": "I"
-              },
-              "hsi_data": {
-                "direction": "O",
-                "left": "31",
-                "right": "0"
-              },
-              "hsi_cmd": {
-                "direction": "O"
-              },
-              "hsi_valid": {
-                "direction": "O"
-              },
-              "async_enable": {
-                "direction": "I"
-              }
-            }
           }
         },
         "interface_nets": {
@@ -2830,18 +2830,18 @@
               "cache/clk",
               "system_ila_0/clk",
               "sim_writer/clk",
-              "fetch_abm/clk",
               "smem_writer_spi/clk",
-              "smem_writer_hsi/clk"
+              "smem_writer_hsi/clk",
+              "fetch_abm/clk"
             ]
           },
           "source_100mhz_sys_resetn": {
             "ports": [
               "resetn",
               "cache/resetn",
-              "fetch_abm/resetn",
               "smem_writer_spi/resetn",
-              "smem_writer_hsi/resetn"
+              "smem_writer_hsi/resetn",
+              "fetch_abm/resetn"
             ]
           }
         }

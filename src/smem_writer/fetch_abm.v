@@ -558,15 +558,8 @@ always @(posedge clk) begin
                     abm_r_state           <= ABM_R_WAIT_CACHE_WRITE;
                 end
 
-                // If no mismatch between cache and ABM for this row...
-                else begin
-                    if (abm_chunk_index == BRAM_CHUNKS - 1)
-                        abm_r_state     <= ABM_R_WAIT_LAST;
-                    else begin
-                        abm_chunk_index <= abm_chunk_index + 1;
-                        abm_r_state     <= ABM_R_READ;
-                    end
-                end
+                // Go decide whether we need to fetch another chunk of the ABM
+                abm_r_state  <= ABM_R_WAIT_CACHE_WRITE;
             end
 
         // Here we wait for the cache update to complete.  Once that
